@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Serilog.AspNetCore" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VepayDO.Application\VepayDO.Application.csproj" />
+    <ProjectReference Include="..\VepayDO.Contracts\VepayDO.Contracts.csproj" />
+    <ProjectReference Include="..\VepayDO.Infrastructure\VepayDO.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

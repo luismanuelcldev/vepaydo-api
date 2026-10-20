@@ -1,0 +1,20 @@
+<Solution>
+  <Project Path="src\VepayDO.Api\VepayDO.Api.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/VepayDO.Application/VepayDO.Application.csproj" />
+    <Project Path="src/VepayDO.Contracts/VepayDO.Contracts.csproj" />
+    <Project Path="src/VepayDO.Domain/VepayDO.Domain.csproj" />
+    <Project Path="src/VepayDO.Infrastructure/VepayDO.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VepayDO.Api.Tests/VepayDO.Api.Tests.csproj" />
+    <Project Path="tests/VepayDO.Application.Tests/VepayDO.Application.Tests.csproj" />
+    <Project Path="tests/VepayDO.Architecture.Tests/VepayDO.Architecture.Tests.csproj" />
+    <Project Path="tests/VepayDO.Domain.Tests/VepayDO.Domain.Tests.csproj" />
+    <Project Path="tests/VepayDO.Infrastructure.Tests/VepayDO.Infrastructure.Tests.csproj" />
+  </Folder>
+  <Folder Name="/db/" />
+  <Folder Name="/infra/" />
+  <Folder Name="/docs/" />
+  <Folder Name="/.github/" />
+</Solution>

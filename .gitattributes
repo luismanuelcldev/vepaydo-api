@@ -1,0 +1,30 @@
+# Normalize all text files to LF in the repository; check out native on Windows.
+# The VepayDO repository convention is LF everywhere (AGENTS.md).
+* text=auto eol=lf
+
+# Explicit text types
+*.cs      text eol=lf
+*.csproj  text eol=lf
+*.props   text eol=lf
+*.slnx    text eol=lf
+*.json    text eol=lf
+*.md      text eol=lf
+*.sql     text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.sh      text eol=lf
+*.editorconfig text eol=lf
+.gitignore    text eol=lf
+.gitattributes text eol=lf
+.env.example   text eol=lf
+
+# Binary assets are never normalized
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.pdf  binary
+*.docx binary
+*.ico  binary
+*.dll  binary
+*.pdb  binary

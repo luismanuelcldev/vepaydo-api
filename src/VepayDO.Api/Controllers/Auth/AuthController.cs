@@ -6,6 +6,7 @@ using VepayDO.Api.Kernel.Attributes;
 using VepayDO.Api.Kernel.Auth;
 using VepayDO.Api.Kernel.Http;
 using VepayDO.Application.Auth;
+using VepayDO.Contracts.Auth;
 
 namespace VepayDO.Api.Controllers.Auth;
 
@@ -39,7 +40,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
 
         AuthCookies.SetRefreshToken(HttpContext, result.RefreshToken, result.RefreshExpiresAt, SecureCookies);
 
-        return StatusCode(StatusCodes.Status201Created, AuthResponse.From(result));
+        return StatusCode(StatusCodes.Status201Created, result.ToResponse());
     }
 
     [Public]
@@ -55,7 +56,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
 
         AuthCookies.SetRefreshToken(HttpContext, result.RefreshToken, result.RefreshExpiresAt, SecureCookies);
 
-        return Ok(AuthResponse.From(result));
+        return Ok(result.ToResponse());
     }
 
     [CheckOrigin]
@@ -69,7 +70,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
             .SelectTenantAsync(userId, body.TenantId, AuthCookies.ReadRefreshToken(HttpContext), Meta(), cancellationToken)
             .ConfigureAwait(false);
 
-        return Ok(SelectTenantResponse.From(result));
+        return Ok(result.ToResponse());
     }
 
     [Public]
@@ -104,7 +105,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
     public async Task<ActionResult<MeResponse>> Me(CancellationToken cancellationToken)
     {
         var result = await auth.MeAsync(User.RequireUserId(), cancellationToken).ConfigureAwait(false);
-        return Ok(MeResponse.From(result));
+        return Ok(result.ToResponse());
     }
 
     [AllowPasswordChange]
@@ -163,7 +164,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
             .ListSessionsAsync(User.RequireUserId(), User.SessionIdOrNull(), cancellationToken)
             .ConfigureAwait(false);
 
-        return Ok(sessions.Select(SessionResponse.From).ToList());
+        return Ok(sessions.Select(s => s.ToResponse()).ToList());
     }
 
     [HttpDelete("sessions/{id:guid}")]

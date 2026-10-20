@@ -13,6 +13,7 @@ using VepayDO.Api.Kernel.Auth;
 using VepayDO.Api.Kernel.Configuration;
 using VepayDO.Api.Kernel.Health;
 using VepayDO.Api.Kernel.Http;
+using VepayDO.Api.Kernel.Logging;
 using VepayDO.Api.Kernel.Routing;
 using VepayDO.Application.Auth;
 using VepayDO.Application.Security;
@@ -24,6 +25,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration
     .ReadFrom.Configuration(context.Configuration)
     .Enrich.FromLogContext()
+    // Never let a sensitive field (sender, reference, token, password, email)
+    // reach a sink, even if someone logs a whole object (AGENTS.md section 13).
+    .Destructure.With<RedactingDestructuringPolicy>()
     .WriteTo.Console(new JsonFormatter(renderMessage: false)));
 
 // Configuration is bound and validated once, before any service is built, so a
@@ -181,9 +185,11 @@ app.UseStatusCodePages(async statusCodeContext =>
 
 app.UseRouting();
 
-// Origin check → authentication → account gates → authorization → tenant scope.
+// Origin check → authentication → request log enrichment → account gates →
+// authorization → tenant scope.
 app.UseMiddleware<OriginGuardMiddleware>();
 app.UseAuthentication();
+app.UseMiddleware<RequestLogEnrichmentMiddleware>();
 app.UseMiddleware<AccountGatesMiddleware>();
 app.UseAuthorization();
 app.UseMiddleware<TenantContextMiddleware>();

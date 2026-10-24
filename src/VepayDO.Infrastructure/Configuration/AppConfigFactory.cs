@@ -62,6 +62,9 @@ public static class AppConfigFactory
                 $"Invalid application configuration:{Environment.NewLine}{details}");
         }
 
+        var licenseKey = Pick(section["LicenseKey"], configuration["VEPAYDO_LICENSE_KEY"]);
+        VepayDO.Infrastructure.Security.LicenseSentinel.AssertValid(environmentName, licenseKey);
+
         return config;
     }
 

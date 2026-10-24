@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using VepayDO.Api.Kernel.Attributes;
 using VepayDO.Api.Kernel.Auth;
 using VepayDO.Application.Configuration;
@@ -6,12 +6,6 @@ using VepayDO.Domain.Errors;
 
 namespace VepayDO.Api.Kernel.Http;
 
-/// <summary>
-/// CSRF mitigation for the cookie-authenticated endpoints (refresh, logout).
-/// Only routes marked with <c>[CheckOrigin]</c> are guarded; access-token
-/// endpoints cannot be forged cross-site because the browser will not attach
-/// the <c>Authorization</c> header (reference <c>OriginGuard</c>).
-/// </summary>
 public sealed class OriginGuardMiddleware
 {
     private readonly RequestDelegate _next;

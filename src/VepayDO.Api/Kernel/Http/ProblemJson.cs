@@ -1,16 +1,10 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using VepayDO.Domain.Errors;
 
 namespace VepayDO.Api.Kernel.Http;
 
-/// <summary>
-/// Writes the RFC 9457 problem-details document. Used by the exception handler
-/// and by the authentication events, so every error leaving the API has one
-/// shape: the standard members plus <c>code</c>, <c>i18nKey</c>, <c>traceId</c>
-/// and optional field <c>errors</c> (AGENTS.md section 10).
-/// </summary>
 public static class ProblemJson
 {
     public const string ContentType = "application/problem+json";

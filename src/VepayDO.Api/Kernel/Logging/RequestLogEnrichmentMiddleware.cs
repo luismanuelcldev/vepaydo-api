@@ -1,16 +1,8 @@
-using Serilog.Context;
+﻿using Serilog.Context;
 using VepayDO.Api.Kernel.Auth;
 
 namespace VepayDO.Api.Kernel.Logging;
 
-/// <summary>
-/// Pushes request-scoped diagnostic properties onto every log line written while
-/// the request runs (AGENTS.md section 13): the trace id, the authenticated
-/// tenant and user, and the client IP. Because these come from the verified
-/// token and the connection, they add correlation without leaking content.
-/// The values are attached as structured properties so JSON logs can be filtered
-/// by <c>TenantId</c> or <c>TraceId</c>.
-/// </summary>
 public sealed class RequestLogEnrichmentMiddleware
 {
     private readonly RequestDelegate _next;

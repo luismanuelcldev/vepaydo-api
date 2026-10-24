@@ -1,14 +1,9 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 using VepayDO.Application.Auth;
 
 namespace VepayDO.Api.Kernel.Http;
 
-/// <summary>
-/// Builds the <see cref="RequestMeta"/> captured from the HTTP boundary for
-/// auditing and session bookkeeping, so every controller derives the caller's
-/// IP, user agent, and truncated device label the same way (AGENTS.md section 13).
-/// </summary>
 public static class RequestMetaFactory
 {
     public static RequestMeta From(HttpContext context)

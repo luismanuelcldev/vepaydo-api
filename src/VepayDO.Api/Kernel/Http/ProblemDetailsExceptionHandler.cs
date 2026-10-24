@@ -1,15 +1,9 @@
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using VepayDO.Domain.Errors;
 
 namespace VepayDO.Api.Kernel.Http;
 
-/// <summary>
-/// Maps every unhandled failure to the RFC 9457 problem-details document of
-/// <c>ProblemJson</c>. Expected domain failures keep their stable
-/// <c>code</c>/<c>i18nKey</c>; anything unexpected becomes a 500 that never
-/// leaks its message (AGENTS.md sections 3.2 and 13).
-/// </summary>
 public sealed partial class ProblemDetailsExceptionHandler(ILogger<ProblemDetailsExceptionHandler> logger)
     : IExceptionHandler
 {
@@ -23,7 +17,7 @@ public sealed partial class ProblemDetailsExceptionHandler(ILogger<ProblemDetail
 
         if (exception is OperationCanceledException && httpContext.RequestAborted.IsCancellationRequested)
         {
-            // The client went away; there is nobody left to answer.
+
             return false;
         }
 

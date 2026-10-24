@@ -1,14 +1,8 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using VepayDO.Application.Auth;
 
 namespace VepayDO.Api.Kernel.Http;
 
-/// <summary>
-/// Reads and writes the rotating refresh token cookie. It is httpOnly and
-/// path-scoped to the auth endpoints so it is never attached to ordinary API
-/// calls, and <c>SameSite=Lax</c> plus the origin guard cover CSRF
-/// (AGENTS.md section 13).
-/// </summary>
 public static class AuthCookies
 {
     public static void SetRefreshToken(

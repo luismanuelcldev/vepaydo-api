@@ -1,12 +1,7 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace VepayDO.Api.Kernel.Http;
 
-/// <summary>
-/// The HTTP status names and default error codes of the problem-details
-/// documents. Titles match the reference <c>HttpStatus</c> enum exactly so the
-/// frontend maps one vocabulary.
-/// </summary>
 public static class ProblemCatalog
 {
     public static string TitleFor(int status) => status switch
@@ -47,7 +42,6 @@ public static class ProblemCatalog
         _ => ($"HTTP.{status}", "error.generic"),
     };
 
-    /// <summary>Neutral, non-committing explanation used when the caller has none.</summary>
     public static string DetailFor(int status) => status switch
     {
         StatusCodes.Status400BadRequest => "The request is invalid",

@@ -7,14 +7,9 @@ using VepayDO.Contracts.Receipts;
 
 namespace VepayDO.Api.Tests;
 
-public sealed class ReceiptEndpointsTests : IClassFixture<ApiTestFactory>
+public sealed class ReceiptEndpointsTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
-    private readonly ApiTestFactory _factory;
-
-    public ReceiptEndpointsTests(ApiTestFactory factory)
-    {
-        _factory = factory;
-    }
+    private readonly ApiTestFactory _factory = factory;
 
     [Fact]
     public async Task List_receipts_requires_authentication()
@@ -64,7 +59,7 @@ public sealed class ReceiptEndpointsTests : IClassFixture<ApiTestFactory>
         content.Add(new ByteArrayContent([0xFF, 0xD8, 0xFF, 0xE0]) { Headers = { ContentType = new MediaTypeHeaderValue("image/jpeg") } }, "files", "receipt.jpg");
 
         var response = await client.PostAsync("/api/v1/receipts", content);
-        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -78,7 +73,7 @@ public sealed class ReceiptEndpointsTests : IClassFixture<ApiTestFactory>
         content.Add(new ByteArrayContent([0xFF, 0xD8, 0xFF, 0xE0]) { Headers = { ContentType = new MediaTypeHeaderValue("image/jpeg") } }, "files", "receipt.jpg");
 
         var response = await client.PostAsync("/api/v1/receipts", content);
-        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]

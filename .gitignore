@@ -5,9 +5,14 @@
 
 # --- VepayDO project-specific ignores (kept at the top for visibility) ---
 
+# Exclude internal documentation and agent guides
+docs/
+AGENTS.md
+
 # Environment files: never commit real secrets. Templates are committed.
 .env
 .env.*
+.env.local
 !.env.example
 
 # Real bank receipt captures: personal and financial data, never commit (AGENTS.md).

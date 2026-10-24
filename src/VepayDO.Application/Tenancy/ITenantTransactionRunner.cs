@@ -1,9 +1,5 @@
-namespace VepayDO.Application.Tenancy;
+﻿namespace VepayDO.Application.Tenancy;
 
-/// <summary>
-/// Executes a unit of work inside a single PostgreSQL transaction with the
-/// tenant context installed via <c>set_config</c> (AGENTS.md section 7).
-/// </summary>
 public interface ITenantTransactionRunner
 {
     Task<TResult> RunAsync<TResult>(

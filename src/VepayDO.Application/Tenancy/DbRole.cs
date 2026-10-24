@@ -1,14 +1,8 @@
-using VepayDO.Domain.Enums;
+﻿using VepayDO.Domain.Enums;
 using VepayDO.Domain.Errors;
 
 namespace VepayDO.Application.Tenancy;
 
-/// <summary>
-/// Role exposed to the database as <c>app.role</c> and read back by
-/// <c>app.current_member_role()</c> (AGENTS.md sections 4.2 and 7).
-/// <c>system</c> is used by background jobs and automatic re-evaluation;
-/// <c>support</c> by platform support sessions (section 9.9).
-/// </summary>
 public enum DbRole
 {
     Owner,
@@ -19,7 +13,7 @@ public enum DbRole
 
 public static class DbRoleExtensions
 {
-    /// <summary>Canonical lowercase value stored in the <c>app.role</c> setting.</summary>
+
     public static string ToDatabaseValue(this DbRole role) => role switch
     {
         DbRole.Owner => "owner",

@@ -1,12 +1,8 @@
-using VepayDO.Domain.Enums;
+﻿using VepayDO.Domain.Enums;
 using VepayDO.Domain.Errors;
 
 namespace VepayDO.Application.Security;
 
-/// <summary>
-/// Capability codes of the permissions matrix (AGENTS.md section 9.5). Dotted
-/// lowercase strings, stable across API and database.
-/// </summary>
 public static class Permissions
 {
     public const string ReceiptsReview = "receipts.review";
@@ -21,11 +17,6 @@ public static class Permissions
 
     public const string CustomersManage = "customers.manage";
 
-    /// <summary>
-    /// Moving a sender alias from one customer to another (UC-DATA-02). OWNER-only;
-    /// kept separate from <see cref="CustomersManage"/> so the VERIFIER cannot
-    /// reassign aliases even though they can edit customers.
-    /// </summary>
     public const string CustomersAliasMove = "customers.aliasMove";
 
     public const string BusinessAccountsManage = "businessAccounts.manage";
@@ -38,7 +29,6 @@ public static class Permissions
 
     public const string ReconciliationView = "reconciliation.view";
 
-    /// <summary>Every known code; used to register one authorization policy each.</summary>
     public static readonly IReadOnlyList<string> All =
     [
         ReceiptsReview,
@@ -56,11 +46,6 @@ public static class Permissions
     ];
 }
 
-/// <summary>
-/// The permissions matrix as executable policy (section 9.5). Used by the HTTP
-/// authorization handler and, later, by use cases as defense in depth, so a
-/// capability check lives in exactly one place.
-/// </summary>
 public static class PermissionPolicy
 {
     private static readonly IReadOnlySet<string> OwnerPermissions = new HashSet<string>(

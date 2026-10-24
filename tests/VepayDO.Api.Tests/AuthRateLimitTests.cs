@@ -2,12 +2,6 @@ using VepayDO.Api.Tests.Fixtures;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// The <c>auth</c> rate-limiting policy returns 429 with a problem-details body
-/// (AGENTS.md sections 10 and 13). Uses a dedicated factory with a tight permit
-/// limit so the shared class fixture in <see cref="AuthEndpointsTests"/> is not
-/// affected.
-/// </summary>
 public sealed class AuthRateLimitTests(TightLimitApiTestFactory factory) : IClassFixture<TightLimitApiTestFactory>
 {
     [Fact]

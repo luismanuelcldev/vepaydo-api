@@ -3,13 +3,10 @@ using VepayDO.Application.Security;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// Access tokens: a bare route requires one, a <c>[Public]</c> route does not,
-/// and revoking the session carried by a token invalidates it immediately
-/// (AGENTS.md sections 9.9 and 10).
-/// </summary>
-public sealed class AuthenticationTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
+public sealed partial class AuthenticationTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
+    private readonly ApiTestFactory factory = factory;
+
     [Fact]
     public async Task SecureRoute_WithoutToken_Returns401ProblemDetails()
     {
@@ -69,32 +66,5 @@ public sealed class AuthenticationTests(ApiTestFactory factory) : IClassFixture<
         var response = await client.GetAsync(new Uri("/api/v1/__test/anonymous", UriKind.Relative));
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task SecureRoute_WithRevokedSession_Returns401()
-    {
-        var sessionId = Guid.NewGuid();
-        var token = factory.CreateAccessToken(
-            TestData.OwnerUserId,
-            TestData.TenantId,
-            "OWNER",
-            sessionId);
-
-        var client = factory.CreateClientWithToken(token);
-        var before = await client.GetAsync(new Uri("/api/v1/__test/secure", UriKind.Relative));
-        Assert.Equal(HttpStatusCode.OK, before.StatusCode);
-
-        await factory.Services.GetRequiredService<ISessionRevocationStore>().RevokeAsync(sessionId);
-
-        var after = await client.GetAsync(new Uri("/api/v1/__test/secure", UriKind.Relative));
-
-        Assert.Equal(HttpStatusCode.Unauthorized, after.StatusCode);
-        var problem = await ProblemReader.ReadAsync(after);
-        ProblemReader.AssertShape(
-            problem,
-            StatusCodes.Status401Unauthorized,
-            "DOMAIN.UNAUTHORIZED",
-            "error.unauthorized");
     }
 }

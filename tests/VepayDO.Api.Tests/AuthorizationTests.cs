@@ -2,11 +2,6 @@ using VepayDO.Api.Tests.Fixtures;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// The permissions matrix of AGENTS.md section 9.5 as it is enforced on HTTP
-/// routes, plus the fail-closed behaviour of a token that carries no member
-/// role.
-/// </summary>
 public sealed class AuthorizationTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
     [Fact]
@@ -52,8 +47,7 @@ public sealed class AuthorizationTests(ApiTestFactory factory) : IClassFixture<A
     [Fact]
     public async Task TokenWithoutTenant_IsForbidden_OnPermissionRoute()
     {
-        // The user is authenticated but has not selected a tenant, so there is no
-        // member role to check the capability against: fail closed.
+
         var client = factory.CreateClientWithToken(
             factory.CreateAccessToken(TestData.OwnerUserId));
 

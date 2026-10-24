@@ -1,13 +1,9 @@
-using Amazon;
+﻿using Amazon;
 using Amazon.S3;
 using VepayDO.Application.Storage;
 
 namespace VepayDO.Infrastructure.Storage.S3;
 
-/// <summary>
-/// The S3-compatible storage family: object storage, presigned URLs and the
-/// canonical key layout (M5.4).
-/// </summary>
 public sealed class S3StorageToolkitFactory : IStorageToolkitFactory
 {
     private readonly IStorageToolkit _toolkit;

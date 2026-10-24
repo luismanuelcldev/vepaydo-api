@@ -1,13 +1,8 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using VepayDO.Application.Storage;
 
 namespace VepayDO.Infrastructure.Storage.InMemory;
 
-/// <summary>
-/// In-memory storage family: the bytes live in the process. It is the family
-/// used by the tests and by a local run without an object store; it is not
-/// durable, and the API says so when it is the configured one (M5.4).
-/// </summary>
 public sealed class InMemoryObjectStorage : IObjectStorage
 {
     private readonly ConcurrentDictionary<string, (string ContentType, byte[] Content)> _objects = new(StringComparer.Ordinal);

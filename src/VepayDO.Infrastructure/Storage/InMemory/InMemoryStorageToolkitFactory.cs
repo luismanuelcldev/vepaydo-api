@@ -1,13 +1,9 @@
-using VepayDO.Application.Storage;
+﻿using VepayDO.Application.Storage;
 using VepayDO.Domain.Time;
 using VepayDO.Infrastructure.Storage;
 
 namespace VepayDO.Infrastructure.Storage.InMemory;
 
-/// <summary>
-/// The in-memory storage family: object storage, signed URLs of the API itself
-/// and the canonical key layout (M5.4).
-/// </summary>
 public sealed class InMemoryStorageToolkitFactory : IStorageToolkitFactory
 {
     private readonly IStorageToolkit _toolkit;

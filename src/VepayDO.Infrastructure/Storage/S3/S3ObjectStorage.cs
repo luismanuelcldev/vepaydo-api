@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
@@ -7,11 +7,6 @@ using VepayDO.Application.Storage;
 
 namespace VepayDO.Infrastructure.Storage.S3;
 
-/// <summary>
-/// S3-compatible object storage. Works against AWS S3 and against any
-/// S3-compatible server (MinIO and friends) through the service URL and the
-/// path-style option of the configuration (M5.4).
-/// </summary>
 public sealed class S3ObjectStorage(IAmazonS3 client, string bucket) : IObjectStorage
 {
     public async Task PutAsync(

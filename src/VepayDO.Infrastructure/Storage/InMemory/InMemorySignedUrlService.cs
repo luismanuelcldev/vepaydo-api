@@ -1,13 +1,8 @@
-using VepayDO.Application.Storage;
+﻿using VepayDO.Application.Storage;
 using VepayDO.Domain.Time;
 
 namespace VepayDO.Infrastructure.Storage.InMemory;
 
-/// <summary>
-/// Issues the signed URLs of the in-memory family: a URL of the API itself that
-/// carries the expiry and an HMAC signature, so the bytes are never served
-/// without a server-issued, time-limited URL (M5.4).
-/// </summary>
 public sealed class InMemorySignedUrlService(
     StorageUrlSigner signer,
     string publicBaseUrl,

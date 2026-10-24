@@ -1,12 +1,8 @@
-using VepayDO.Application.Customers;
+﻿using VepayDO.Application.Customers;
 using VepayDO.Contracts.Customers;
 
 namespace VepayDO.Api.Controllers.Customers;
 
-/// <summary>
-/// Maps the customer application results onto the wire contracts, keeping
-/// <c>VepayDO.Contracts</c> free of any Application dependency (AGENTS.md section 6).
-/// </summary>
 internal static class CustomerMappers
 {
     public static CustomerResponse ToResponse(this CustomerView customer)

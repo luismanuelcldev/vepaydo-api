@@ -1,13 +1,9 @@
-using FluentValidation;
+﻿using FluentValidation;
 using VepayDO.Contracts.Members;
 using VepayDO.Domain.Enums;
 
 namespace VepayDO.Api.Controllers.Members;
 
-/// <summary>
-/// Validates the member payloads (UC-SET-03): a valid unique email, a non-empty
-/// name, and a known role.
-/// </summary>
 public sealed class CreateMemberRequestValidator : AbstractValidator<CreateMemberRequest>
 {
     public CreateMemberRequestValidator()
@@ -20,10 +16,6 @@ public sealed class CreateMemberRequestValidator : AbstractValidator<CreateMembe
     }
 }
 
-/// <summary>
-/// Validates the role/active change (UC-SET-03). Both fields are optional, but a
-/// supplied role must be known.
-/// </summary>
 public sealed class UpdateMemberRequestValidator : AbstractValidator<UpdateMemberRequest>
 {
     public UpdateMemberRequestValidator()

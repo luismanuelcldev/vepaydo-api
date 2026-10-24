@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using VepayDO.Api.Kernel.Attributes;
 using VepayDO.Api.Kernel.Auth;
@@ -9,10 +9,6 @@ using VepayDO.Contracts.Members;
 
 namespace VepayDO.Api.Controllers.Members;
 
-/// <summary>
-/// Member management endpoints under <c>/api/v1/members</c> (UC-SET-03, UC-AUTH-09).
-/// Every route is OWNER-only.
-/// </summary>
 [ApiController]
 [Route("members")]
 [RequirePermission(Permissions.MembersManage)]

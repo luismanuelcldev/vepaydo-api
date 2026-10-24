@@ -1,13 +1,9 @@
-using FluentValidation;
+﻿using FluentValidation;
 using VepayDO.Contracts.Customers;
 using VepayDO.Domain.Customers;
 
 namespace VepayDO.Api.Controllers.Customers;
 
-/// <summary>
-/// Validates the customer payloads (UC-DATA-01): a non-empty name within the
-/// domain limit. Phone and notes are free text.
-/// </summary>
 public sealed class CreateCustomerRequestValidator : AbstractValidator<CreateCustomerRequest>
 {
     public CreateCustomerRequestValidator()
@@ -18,7 +14,6 @@ public sealed class CreateCustomerRequestValidator : AbstractValidator<CreateCus
     }
 }
 
-/// <summary>Validates the partial customer update (UC-DATA-01).</summary>
 public sealed class UpdateCustomerRequestValidator : AbstractValidator<UpdateCustomerRequest>
 {
     public UpdateCustomerRequestValidator()
@@ -32,7 +27,6 @@ public sealed class UpdateCustomerRequestValidator : AbstractValidator<UpdateCus
     }
 }
 
-/// <summary>Validates an alias payload (UC-DATA-02).</summary>
 public sealed class AddAliasRequestValidator : AbstractValidator<AddAliasRequest>
 {
     public AddAliasRequestValidator()
@@ -41,7 +35,6 @@ public sealed class AddAliasRequestValidator : AbstractValidator<AddAliasRequest
     }
 }
 
-/// <summary>Validates a move-alias payload (UC-DATA-02).</summary>
 public sealed class MoveAliasRequestValidator : AbstractValidator<MoveAliasRequest>
 {
     public MoveAliasRequestValidator()

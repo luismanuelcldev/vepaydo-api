@@ -1,12 +1,8 @@
-using VepayDO.Application.Members;
+﻿using VepayDO.Application.Members;
 using VepayDO.Contracts.Members;
 
 namespace VepayDO.Api.Controllers.Members;
 
-/// <summary>
-/// Maps the member application results onto the wire contracts, keeping
-/// <c>VepayDO.Contracts</c> free of any Application dependency (AGENTS.md section 6).
-/// </summary>
 internal static class MemberMappers
 {
     public static MemberResponse ToResponse(this MemberView member)

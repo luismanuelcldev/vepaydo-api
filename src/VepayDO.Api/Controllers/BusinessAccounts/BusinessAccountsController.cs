@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using VepayDO.Api.Kernel.Attributes;
 using VepayDO.Api.Kernel.Auth;
@@ -9,10 +9,6 @@ using VepayDO.Contracts.BusinessAccounts;
 
 namespace VepayDO.Api.Controllers.BusinessAccounts;
 
-/// <summary>
-/// Business bank account endpoints under <c>/api/v1/business-accounts</c>
-/// (UC-SET-03). Every route is OWNER-only (AGENTS.md section 9.5).
-/// </summary>
 [ApiController]
 [Route("business-accounts")]
 [RequirePermission(Permissions.BusinessAccountsManage)]

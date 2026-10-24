@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using VepayDO.Api.Kernel.Attributes;
 using VepayDO.Api.Kernel.Auth;
 using VepayDO.Api.Kernel.Http;
@@ -8,11 +8,6 @@ using VepayDO.Contracts.Customers;
 
 namespace VepayDO.Api.Controllers.Customers;
 
-/// <summary>
-/// Customer endpoints under <c>/api/v1/customers</c> (UC-DATA-01, UC-DATA-02).
-/// Read and mutate allow OWNER and VERIFIER; moving an alias between customers is
-/// OWNER-only (AGENTS.md section 9.5).
-/// </summary>
 [ApiController]
 [Route("customers")]
 public sealed class CustomersController(ICustomerService customers) : ControllerBase

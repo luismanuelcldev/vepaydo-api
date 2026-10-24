@@ -1,12 +1,7 @@
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace VepayDO.Api.Controllers.Auth;
 
-/// <summary>
-/// Validators mirroring the shared Zod schemas (<c>packages/shared/src/schemas.ts</c>)
-/// so both APIs reject the same payloads: minimum password length of 12, a valid
-/// email address, and the two supported locales (AGENTS.md section 10).
-/// </summary>
 public sealed class RegisterRequestValidator : AbstractValidator<RegisterRequest>
 {
     public RegisterRequestValidator()

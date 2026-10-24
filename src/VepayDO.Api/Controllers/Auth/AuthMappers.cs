@@ -1,14 +1,8 @@
-using VepayDO.Application.Auth;
+﻿using VepayDO.Application.Auth;
 using VepayDO.Contracts.Auth;
 
 namespace VepayDO.Api.Controllers.Auth;
 
-/// <summary>
-/// Translates the application-layer results into the wire contracts of
-/// <c>VepayDO.Contracts</c> (AGENTS.md section 6). Keeping the mapping here lets
-/// the Contracts assembly stay free of any Application dependency, so the same
-/// DTOs can be shared with the web client.
-/// </summary>
 internal static class AuthMappers
 {
     public static MembershipResponse ToResponse(this MembershipSummary membership)

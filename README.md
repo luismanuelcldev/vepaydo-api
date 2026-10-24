@@ -1,6 +1,8 @@
 # VePayDO API - Backend App (.NET 10)
 
 [![CI & DevSecOps Pipeline](https://github.com/luismanuelcldev/vepaydo-api/actions/workflows/ci.yml/badge.svg)](https://github.com/luismanuelcldev/vepaydo-api/actions/workflows/ci.yml)
+[![CodeQL SAST Analysis](https://github.com/luismanuelcldev/vepaydo-api/actions/workflows/codeql.yml/badge.svg)](https://github.com/luismanuelcldev/vepaydo-api/actions/workflows/codeql.yml)
+[![Security Policy](https://img.shields.io/badge/Security-Policy-blue.svg)](SECURITY.md)
 
 High-performance, multi-tenant enterprise backend built with **.NET 10**, **C# 13**, **ASP.NET Core**, and **PostgreSQL with Row-Level Security (RLS)**.
 

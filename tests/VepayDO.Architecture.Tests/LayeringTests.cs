@@ -4,11 +4,7 @@ using NetArchTest.Rules;
 
 namespace VepayDO.Architecture.Tests;
 
-/// <summary>
-/// Enforces the dependency rule "inward only" (AGENTS.md section 6). These tests
-/// fail the build the moment a layer reaches the wrong way.
-/// </summary>
-public sealed class LayeringTests
+public sealed partial class LayeringTests
 {
     private static Assembly DomainAssembly => typeof(VepayDO.Domain.Money).Assembly;
 
@@ -79,31 +75,5 @@ public sealed class LayeringTests
     public void Infrastructure_does_not_depend_on_api()
     {
         AssertNoDependency(InfrastructureAssembly, "VePayDO.Api");
-    }
-
-    [Fact]
-    public void Api_assembly_is_loadable()
-    {
-        ApiAssembly.GetName().Name.Should().Be("VepayDO.Api");
-    }
-
-    private static void AssertNoDependency(Assembly assembly, params string[] forbidden)
-    {
-        // Assemblies with no types yet (early milestones) trivially satisfy the rule.
-        if (assembly.GetTypes().Length == 0)
-        {
-            return;
-        }
-
-        TestResult result = Types.InAssembly(assembly)
-            .Should()
-            .NotHaveDependencyOnAny(forbidden)
-            .GetResult();
-
-        result.IsSuccessful.Should().BeTrue(
-            "{0} must not depend on [{1}], but these types do: {2}",
-            assembly.GetName().Name,
-            string.Join(", ", forbidden),
-            string.Join(", ", result.FailingTypeNames ?? new List<string>()));
     }
 }

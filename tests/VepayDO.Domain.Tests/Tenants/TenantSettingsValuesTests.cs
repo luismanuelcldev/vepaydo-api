@@ -1,16 +1,10 @@
 using FluentAssertions;
-
 using VepayDO.Domain.Errors;
 using VepayDO.Domain.Tenants;
 
 namespace VepayDO.Domain.Tests.Tenants;
 
-/// <summary>
-/// Pins the Prototype behavior of <see cref="TenantSettingsValues"/> (AGENTS.md
-/// sections 8.4 and 9.6): the default prototype is stable, each clone is
-/// deep-independent, and the shared invariants reject out-of-range values.
-/// </summary>
-public sealed class TenantSettingsValuesTests
+public sealed partial class TenantSettingsValuesTests
 {
     [Fact]
     public void Default_carries_the_documented_prototype_values()
@@ -36,7 +30,6 @@ public sealed class TenantSettingsValuesTests
             ImageRetentionMonths = 3,
         };
 
-        // Re-reading the prototype proves the clone never aliased it.
         TenantSettingsValues.Default.DateWindowDays.Should().Be(7);
         TenantSettingsValues.Default.AmountTolerance.Should().Be(0m);
         TenantSettingsValues.Default.VerifierAmountCap.Should().BeNull();
@@ -82,40 +75,6 @@ public sealed class TenantSettingsValuesTests
     public void Validate_rejects_a_negative_tolerance()
     {
         var settings = TenantSettingsValues.Default.FromPrototype() with { AmountTolerance = -0.01m };
-
-        var act = settings.Validate;
-
-        act.Should().Throw<InvalidArgumentDomainException>();
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-5)]
-    public void Validate_rejects_a_non_positive_cap(decimal cap)
-    {
-        var settings = TenantSettingsValues.Default.FromPrototype() with { VerifierAmountCap = cap };
-
-        var act = settings.Validate;
-
-        act.Should().Throw<InvalidArgumentDomainException>();
-    }
-
-    [Fact]
-    public void Validate_accepts_a_null_cap()
-    {
-        var settings = TenantSettingsValues.Default.FromPrototype();
-
-        var act = settings.Validate;
-
-        act.Should().NotThrow();
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(121)]
-    public void Validate_rejects_a_retention_out_of_range(short months)
-    {
-        var settings = TenantSettingsValues.Default.FromPrototype() with { ImageRetentionMonths = months };
 
         var act = settings.Validate;
 

@@ -1,4 +1,4 @@
-using VepayDO.Application.Audit;
+﻿using VepayDO.Application.Audit;
 using VepayDO.Application.Receipts.Ports;
 using VepayDO.Application.Storage;
 using VepayDO.Application.Tenancy;
@@ -7,11 +7,6 @@ using VepayDO.Domain.Errors;
 
 namespace VepayDO.Application.Receipts;
 
-/// <summary>
-/// The worker side of the receipt lifecycle (M5.4). It runs inside the tenant
-/// transaction of the job, so the RLS policies of the tenant apply and every
-/// write is audited with the <c>system</c> actor.
-/// </summary>
 public sealed class ReceiptProcessingService(
     IReceiptRepository receipts,
     IStorageToolkit storage,
@@ -44,9 +39,7 @@ public sealed class ReceiptProcessingService(
 
         if (!stored)
         {
-            // The file is gone: the receipt stays in RECEIVED and the job is
-            // retried. A missing file is an operational problem, never a reason
-            // to lose the receipt.
+
             throw new InvalidOperationException($"The stored file of receipt {receiptId:D} is missing");
         }
 

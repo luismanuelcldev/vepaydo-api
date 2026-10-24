@@ -1,4 +1,4 @@
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using VepayDO.Api.Kernel.Attributes;
 using VepayDO.Api.Kernel.Auth;
@@ -9,10 +9,6 @@ using VepayDO.Contracts.Tenants;
 
 namespace VepayDO.Api.Controllers.Tenants;
 
-/// <summary>
-/// Tenant settings endpoints under <c>/api/v1/settings</c> (UC-SET-04). Any active
-/// member may read the settings; only the OWNER may change them.
-/// </summary>
 [ApiController]
 [Route("settings")]
 [SuppressMessage(

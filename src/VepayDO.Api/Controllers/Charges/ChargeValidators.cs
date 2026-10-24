@@ -1,4 +1,4 @@
-using FluentValidation;
+﻿using FluentValidation;
 
 using VepayDO.Contracts.Charges;
 using VepayDO.Domain.Billing;
@@ -7,11 +7,6 @@ using VepayDO.Domain.Enums;
 
 namespace VepayDO.Api.Controllers.Charges;
 
-/// <summary>
-/// Validates the charge list filters (UC-DATA-03): the status, when present, must
-/// be a known <see cref="ChargeStatus"/> so an unknown value is a controlled error
-/// instead of a silently ignored filter.
-/// </summary>
 public sealed class ChargeListRequestValidator : AbstractValidator<ChargeListRequest>
 {
     public ChargeListRequestValidator()
@@ -26,11 +21,6 @@ public sealed class ChargeListRequestValidator : AbstractValidator<ChargeListReq
         Enum.TryParse<ChargeStatus>(status, ignoreCase: true, out _);
 }
 
-/// <summary>
-/// Validates the charge payloads (UC-DATA-03): a non-empty description, a positive
-/// amount, a supported currency and the date ordering. The code, when supplied, must
-/// match the domain format.
-/// </summary>
 public sealed class CreateChargeRequestValidator : AbstractValidator<CreateChargeRequest>
 {
     public CreateChargeRequestValidator()
@@ -65,7 +55,6 @@ public sealed class CreateChargeRequestValidator : AbstractValidator<CreateCharg
     }
 }
 
-/// <summary>Validates the partial charge update (UC-DATA-03); all fields optional.</summary>
 public sealed class UpdateChargeRequestValidator : AbstractValidator<UpdateChargeRequest>
 {
     public UpdateChargeRequestValidator()
@@ -101,7 +90,6 @@ public sealed class UpdateChargeRequestValidator : AbstractValidator<UpdateCharg
     }
 }
 
-/// <summary>Validates a void payload: the reason is mandatory (UC-DATA-03).</summary>
 public sealed class VoidChargeRequestValidator : AbstractValidator<VoidChargeRequest>
 {
     public VoidChargeRequestValidator()

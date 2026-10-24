@@ -1,12 +1,8 @@
-using VepayDO.Application.Charges;
+﻿using VepayDO.Application.Charges;
 using VepayDO.Contracts.Charges;
 
 namespace VepayDO.Api.Controllers.Charges;
 
-/// <summary>
-/// Maps the charge application results onto the wire contracts, keeping
-/// <c>VepayDO.Contracts</c> free of any Application dependency (AGENTS.md section 6).
-/// </summary>
 internal static class ChargeMappers
 {
     public static ChargeResponse ToResponse(this ChargeView charge)

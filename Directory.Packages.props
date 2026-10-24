@@ -16,7 +16,7 @@
     <PackageVersion Include="FluentValidation" Version="12.2.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.2.0" />
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
-    <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.1.1" />
     <!-- Core Serilog, referenced by the Infrastructure layer so the redaction
          policy can live next to the code that must never log sensitive data. -->
     <PackageVersion Include="Serilog" Version="4.2.0" />

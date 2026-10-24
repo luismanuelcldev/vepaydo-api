@@ -1,12 +1,7 @@
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace VepayDO.Application.Notifications;
 
-/// <summary>
-/// Spanish (es-DO) transactional email copy. Kept in code for the MVP; the
-/// frontend owns presentational copy through i18n, but email is the one place
-/// the API renders user-facing text itself (AGENTS.md sections 3.2 and 9.9).
-/// </summary>
 public static class MailTemplates
 {
     public static MailMessage PasswordReset(string to, string resetUrl, string brandName)

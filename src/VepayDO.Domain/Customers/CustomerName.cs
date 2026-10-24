@@ -1,14 +1,8 @@
-using VepayDO.Domain.Errors;
+﻿using VepayDO.Domain.Errors;
 using VepayDO.Domain.Text;
 
 namespace VepayDO.Domain.Customers;
 
-/// <summary>
-/// A customer or alias display name (UC-DATA-01, AGENTS.md section 9.3). The
-/// normalized form feeds the <c>SENDER</c> matching signal and the
-/// <c>name_normalized</c>/<c>alias_normalized</c> columns, so both display and
-/// normalized values are validated together and can never drift apart.
-/// </summary>
 public sealed record CustomerName
 {
     public const int MaxLength = 160;
@@ -19,16 +13,10 @@ public sealed record CustomerName
         Normalized = normalized;
     }
 
-    /// <summary>The trimmed, human-readable name as entered.</summary>
     public string Display { get; }
 
-    /// <summary>The case-, accent- and punctuation-insensitive matching form.</summary>
     public string Normalized { get; }
 
-    /// <summary>
-    /// Validates and normalizes a name. Rejects an empty/whitespace name and one
-    /// whose normalized form is empty (for example only punctuation).
-    /// </summary>
     public static CustomerName Parse(string? value)
     {
         var display = value?.Trim() ?? string.Empty;

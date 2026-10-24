@@ -5,10 +5,6 @@
 
 # --- VepayDO project-specific ignores (kept at the top for visibility) ---
 
-# Exclude internal documentation and agent guides
-docs/
-AGENTS.md
-
 # Environment files: never commit real secrets. Templates are committed.
 .env
 .env.*

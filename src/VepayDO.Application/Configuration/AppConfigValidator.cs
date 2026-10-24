@@ -47,7 +47,59 @@ public static class AppConfigValidator
             errors.Add(new FieldError(nameof(AppConfig.MailHost), "is required when MailTransport is 'smtp'"));
         }
 
+        if (!StorageProviders.IsKnown(config.StorageProvider))
+        {
+            errors.Add(new FieldError(
+                nameof(AppConfig.StorageProvider),
+                $"must be '{StorageProviders.InMemory}' or '{StorageProviders.S3}'"));
+        }
+
+        if (string.Equals(config.StorageProvider, StorageProviders.InMemory, StringComparison.OrdinalIgnoreCase))
+        {
+            RequiredUrl(config.StoragePublicBaseUrl, nameof(AppConfig.StoragePublicBaseUrl), errors);
+            MinLength(config.StorageSigningSecret, MinSecretLength, nameof(AppConfig.StorageSigningSecret), errors);
+        }
+        else
+        {
+            RequiredValue(config.S3Bucket, nameof(AppConfig.S3Bucket), errors);
+            RequiredValue(config.S3AccessKey, nameof(AppConfig.S3AccessKey), errors);
+            RequiredValue(config.S3SecretKey, nameof(AppConfig.S3SecretKey), errors);
+        }
+
+        if (config.StorageMaxUploadBytes <= 0)
+        {
+            errors.Add(new FieldError(nameof(AppConfig.StorageMaxUploadBytes), "must be a positive integer"));
+        }
+
+        if (config.StorageSignedUrlTtlSeconds < 30)
+        {
+            errors.Add(new FieldError(nameof(AppConfig.StorageSignedUrlTtlSeconds), "must be at least 30 seconds"));
+        }
+
+        if (config.WorkerBatchSize <= 0)
+        {
+            errors.Add(new FieldError(nameof(AppConfig.WorkerBatchSize), "must be a positive integer"));
+        }
+
+        if (config.WorkerPollIntervalSeconds <= 0)
+        {
+            errors.Add(new FieldError(nameof(AppConfig.WorkerPollIntervalSeconds), "must be a positive integer"));
+        }
+
+        if (config.WorkerMaxAttempts <= 0)
+        {
+            errors.Add(new FieldError(nameof(AppConfig.WorkerMaxAttempts), "must be a positive integer"));
+        }
+
         return errors;
+    }
+
+    private static void RequiredValue(string? value, string path, List<FieldError> errors)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            errors.Add(new FieldError(path, "is required"));
+        }
     }
 
     private static void RequiredUrl(string? value, string path, List<FieldError> errors)

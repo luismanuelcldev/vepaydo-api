@@ -12,17 +12,18 @@ Creational patterns from refactoring.guru (used where they fit). Each usage is d
 | ---------------- | ----------- | --------------------------------------------------------------------- |
 | Factory Method   | planned     | Receipt parsers per bank                                              |
 | Abstract Factory | planned     | Storage/extraction toolkits                                           |
-| Builder          | planned     | ParsedReceipt/Alert/Report/AuditEvent builders                        |
-| Prototype        | in progress | `ICloneable<T>` contract (`VepayDO.Domain.Common`); `ChargeDraft`/`TenantSettings` next |
-| Singleton        | in progress | `IClock` -> `SystemClock`, `AppConfig` (via DI container)             |
+| Builder          | implemented | AuditEvent (`VepayDO.Application.Audit`); ParsedReceipt/Alert/Report planned |
+| Prototype        | implemented | `TenantSettingsValues.FromPrototype` (M5.1); `ChargeDraft` (M5.3); `ReceiptSnapshot` later |
+| Singleton        | implemented | `IClock` -> `SystemClock`, `AppConfig` (via DI container)             |
 
 - **Singleton (DI only).** `SystemClock` and the validated `AppConfig` are
   registered as DI singletons in the composition root; no `static getInstance()`
   and no mutable module-level globals (AGENTS.md section 8.5).
 - **Prototype.** `ICloneable<out T>` (`VepayDO.Domain.Common.ICloneable`) is the
-  contract; implementations must return a deep, independent copy. Concrete uses
-  (`ChargeDraft.clone`, `TenantSettings.fromPrototype`, `ReceiptSnapshot.clone`)
-  arrive in later milestones.
+  contract; implementations must return a deep, independent copy.
+  `TenantSettingsValues.Default` is the prototype and `FromPrototype()` returns a
+  fresh, independent copy (M5.1). `ChargeDraft` (M5.3) is the prototype for the
+  duplicate-charge use case (UC-DATA-04); `ReceiptSnapshot` arrives in M5.5.
 
 | Pattern          | Status      | Usage                                                                                                 |
 | ---------------- | ----------- | ----------------------------------------------------------------------------------------------------- |
@@ -50,9 +51,30 @@ Creational patterns from refactoring.guru (used where they fit). Each usage is d
 - All via Nest default singleton scope (no `static getInstance()`)
 - Test evidence: `apps/api/test/singleton.spec.ts` resolves each provider twice and asserts identity (AppConfig, PrismaService, CLOCK, PermissionPolicy); also asserts `AppConfig` is frozen. The revocation store's Redis/in-memory selection is exercised through the API integration suite (an empty `REDIS_URL` selects the in-memory store).
 
-## Prototype (phase 2)
+## Prototype (phase 2 / M5.1)
 
 `TenantSettings` exposes `static DEFAULTS` and `static fromPrototype()` producing a deep, independent copy (no shared mutable references). Tests assert mutating the copy does not affect the prototype.
+
+**.NET port (M5.1).** `TenantSettingsValues` (`VepayDO.Domain.Tenants`) is a
+`record` implementing `ICloneable<TenantSettingsValues>` explicitly (the
+compiler-synthesized record copy would mask the contract; the explicit
+`Clone()` keeps the intent visible). `TenantSettingsValues.Default` is the
+prototype (7 / 0.00 / null / 24) and `FromPrototype()` returns a fresh,
+independent copy plus `Validate()` enforces the ranges. Test evidence:
+`tests/VepayDO.Domain.Tests/Tenants/TenantSettingsValuesTests.cs` asserts that
+mutating a `FromPrototype()` copy leaves `Default` unchanged.
+
+**Charge duplicate (M5.3).** `ChargeDraft` (`VepayDO.Domain.Charges`) is a
+`record` implementing `ICloneable<ChargeDraft>` explicitly, for the same reason as
+`TenantSettingsValues`: the compiler-synthesized record copy would otherwise mask
+the Prototype contract. `Clone()` returns a draft with a **cleared identity** (no
+`Id`), the **cleared status** (`OPEN`) and **no allocations**, while the
+descriptive fields (code, description, amount, dates, customer) are copied into
+an independent instance. The clone is the input of the duplicate-charge use case
+(UC-DATA-04); the caller assigns the new unique code. Test evidence:
+`tests/VepayDO.Domain.Tests/Charges/ChargeDraftTests.cs` asserts that the clone
+has no identity, no allocations, an `OPEN` status, and that mutating the copy
+leaves the original untouched.
 
 ## Builder (phase 2)
 

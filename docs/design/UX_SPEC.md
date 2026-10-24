@@ -1,5 +1,7 @@
 # VepayDO — UX Specification
 
+> **SNAPSHOT — source of truth lives elsewhere.** The authoritative UX_SPEC (updated for the Flutter client, ADR 0003 there) is in the monorepo repository: `C:\Mis proyectos\VePayDO\docs\design\UX_SPEC.md` (GitHub: `https://github.com/luismanuelcldev/VePayDO`). Re-sync this copy when that file changes materially; do not edit this copy for UX decisions.
+
 **Status:** authoritative for visual and interaction decisions. `AGENTS.md` section 12 defines behavior and scope; this file defines how it looks, feels, and reads. If they conflict, **this file wins for UI and copy; `AGENTS.md` wins for business rules and security.**
 **Language:** this document is in English. User-facing copy is Spanish (es-DO) and lives in i18n resources; every string below has an i18n key in `snake.case`.
 **Positioning rule (copy and visuals):** VepayDO **alerts, it does not certify.** Never use "verified by VepayDO", "fraud", "fake", or "guaranteed". Say what the system noticed and let the person decide.

@@ -2,7 +2,7 @@ using FluentAssertions;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using VepayDO.Api.Kernel.Logging;
+using VepayDO.Infrastructure.Logging;
 
 namespace VepayDO.Api.Tests;
 

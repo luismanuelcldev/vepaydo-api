@@ -4,7 +4,7 @@ using System.Reflection;
 using Serilog.Core;
 using Serilog.Events;
 
-namespace VepayDO.Api.Kernel.Logging;
+namespace VepayDO.Infrastructure.Logging;
 
 /// <summary>
 /// Masks sensitive values before they ever reach a log sink (AGENTS.md section 13):

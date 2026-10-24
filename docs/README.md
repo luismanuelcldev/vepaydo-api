@@ -2,7 +2,7 @@
 
 | Path                             | Content                                                                                    |
 | -------------------------------- | ------------------------------------------------------------------------------------------ |
-| `prompts/PHASES.md`              | Execution prompts, Phases 0 to 8                                                           |
+| `prompts/PHASES.md`              | Execution prompts, milestones M0 to M7 (ASP.NET Core)                                      |
 | `reference/product/`             | Product and architecture document (Markdown and Word)                                      |
 | `reference/schema/`              | Reference SQL schema (Spanish identifiers; translated to English Prisma models in Phase 1) |
 | `reference/real-receipts/`       | Real receipt captures (git-ignored, never commit)                                          |
@@ -20,3 +20,8 @@ describes the .NET solution; `ASSUMPTIONS.md` and `BACKLOG.md` carry both the
 reference phases and the `.NET migration` milestones.
 
 Files created by the agent during the phases: `ARCHITECTURE.md`, `PATTERNS.md`, `ASSUMPTIONS.md`, `BACKLOG.md`, `schema-mapping.md`, `SECURITY-CHECKLIST.md`.
+
+`prompts/PHASES.md` is the **.NET edition** of the milestone prompts. An earlier
+version described the NestJS/Prisma phases 0–8; it is preserved here as
+behavioural reference only, but work is executed against the .NET milestones
+M0–M7.

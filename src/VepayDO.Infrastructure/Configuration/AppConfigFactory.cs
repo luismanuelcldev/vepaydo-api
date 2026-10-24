@@ -1,6 +1,7 @@
+using Microsoft.Extensions.Configuration;
 using VepayDO.Application.Configuration;
 
-namespace VepayDO.Api.Kernel.Configuration;
+namespace VepayDO.Infrastructure.Configuration;
 
 /// <summary>
 /// Binds and validates <see cref="AppConfig"/> at boot. Configuration keys use
@@ -35,6 +36,14 @@ public static class AppConfigFactory
             S3AccessKey = Pick(section["S3AccessKey"], configuration["S3_ACCESS_KEY"]),
             S3SecretKey = Pick(section["S3SecretKey"], configuration["S3_SECRET_KEY"]),
             S3ForcePathStyle = ParseBool(Pick(section["S3ForcePathStyle"], configuration["S3_FORCE_PATH_STYLE"])),
+            StorageProvider = Pick(section["StorageProvider"], configuration["STORAGE_PROVIDER"]) ?? StorageProviders.InMemory,
+            StoragePublicBaseUrl = Pick(section["StoragePublicBaseUrl"], configuration["STORAGE_PUBLIC_BASE_URL"]) ?? string.Empty,
+            StorageSigningSecret = Pick(section["StorageSigningSecret"], configuration["STORAGE_SIGNING_SECRET"]) ?? string.Empty,
+            StorageMaxUploadBytes = ParseInt(Pick(section["StorageMaxUploadBytes"], configuration["STORAGE_MAX_UPLOAD_BYTES"])) ?? 10_000_000,
+            StorageSignedUrlTtlSeconds = ParseInt(Pick(section["StorageSignedUrlTtlSeconds"], configuration["STORAGE_SIGNED_URL_TTL_SECONDS"])) ?? 300,
+            WorkerBatchSize = ParseInt(Pick(section["WorkerBatchSize"], configuration["WORKER_BATCH_SIZE"])) ?? 10,
+            WorkerPollIntervalSeconds = ParseInt(Pick(section["WorkerPollIntervalSeconds"], configuration["WORKER_POLL_INTERVAL_SECONDS"])) ?? 5,
+            WorkerMaxAttempts = ParseInt(Pick(section["WorkerMaxAttempts"], configuration["WORKER_MAX_ATTEMPTS"])) ?? 5,
             OcrServiceUrl = Pick(section["OcrServiceUrl"], configuration["OCR_SERVICE_URL"]),
             FcmProjectId = Pick(section["FcmProjectId"], configuration["FCM_PROJECT_ID"]),
             FcmClientEmail = Pick(section["FcmClientEmail"], configuration["FCM_CLIENT_EMAIL"]),

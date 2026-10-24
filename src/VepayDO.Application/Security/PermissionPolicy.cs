@@ -21,6 +21,13 @@ public static class Permissions
 
     public const string CustomersManage = "customers.manage";
 
+    /// <summary>
+    /// Moving a sender alias from one customer to another (UC-DATA-02). OWNER-only;
+    /// kept separate from <see cref="CustomersManage"/> so the VERIFIER cannot
+    /// reassign aliases even though they can edit customers.
+    /// </summary>
+    public const string CustomersAliasMove = "customers.aliasMove";
+
     public const string BusinessAccountsManage = "businessAccounts.manage";
 
     public const string MembersManage = "members.manage";
@@ -40,6 +47,7 @@ public static class Permissions
         AlertsResolveCritical,
         ChargesManage,
         CustomersManage,
+        CustomersAliasMove,
         BusinessAccountsManage,
         MembersManage,
         SettingsManage,

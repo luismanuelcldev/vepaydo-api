@@ -22,15 +22,25 @@ Track work items. No TODOs without linked entries here.
       convention, and `VepayDO.Api.Tests` (33 tests) over `WebApplicationFactory`
 - [ ] M5 - business modules (auth, tenants, members, accounts, customers,
       charges, receipts, alerts, allocations, audit, reconciliation, settings)
+      - [x] M5.1 - tenant settings (get/update) + members (list/create/patch/
+            revoke-sessions), temp password + last-active-owner guard
+      - [x] M5.2 - business accounts (UC-SET-03) + customers and aliases
+            (UC-DATA-01/02) with the last4-only and alias-uniqueness rules
+      - [x] M5.3 - charges (UC-DATA-03/04/06): CRUD, tenant-unique code
+            generation, void with reason, duplicate via the `ChargeDraft`
+            prototype, CSV import with a per-row report, balances read from
+            `v_charge_balances`
 - [ ] M6 - storage, OCR service, matching engine, report builders
 - [ ] M7 - Docker/Caddy, CI/CD, backups, e2e, bundle and i18n checks
 
 ### Migration gaps to close
 
-- [ ] Port the database bootstrap script (create `vepaydo_owner` /
+- [x] Port the database bootstrap script (create `vepaydo_owner` /
       `vepaydo_app` / `vepaydo_maintenance` + `ALTER DATABASE ... OWNER`) and its
-      runbook; today only `PostgresFixture` does this for tests
-      (reference: `scripts/bootstrap-db.mjs` in the NestJS repo).
+      runbook. Done: `scripts/bootstrap-db.ps1` (Windows) and
+      `scripts/bootstrap-db.sh` (Linux/CI), documented in
+      `runbooks/database-bootstrap.md`; `PostgresFixture` still performs the
+      same bootstrap for tests.
 - [x] Add `Session.TenantId` to the EF entity and the `sessions_tenant_id_fkey`
       relationship (`DeleteBehavior.SetNull`, matching the migration), so sessions
       can be filtered by tenant. Done with M4.
@@ -41,6 +51,10 @@ Track work items. No TODOs without linked entries here.
 - [ ] Replace `InMemorySessionRevocationStore` and `InMemoryLoginAttemptStore`
       with Redis-backed implementations before running more than one API
       instance; both are process-local singletons today (M7).
+- [ ] Introduce cursor-based pagination for list endpoints (business accounts,
+      customers, charges, members) once pilot volumes make a full list
+      unrealistic; today every list is returned in full, ordered
+      deterministically (M5.2 decision, see `ASSUMPTIONS.md`).
 
 ## Phase 0 - Foundation
 

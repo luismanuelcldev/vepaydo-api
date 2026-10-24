@@ -143,6 +143,19 @@ public sealed class TooManyRequestsException : DomainException
     public override string I18nKey => "error.too_many_requests";
 }
 
+/// <summary>The payload is larger than the endpoint accepts.</summary>
+public sealed class PayloadTooLargeException : DomainException
+{
+    public PayloadTooLargeException(string message = "The request payload is too large")
+        : base(message, httpStatus: 413)
+    {
+    }
+
+    public override string Code => "DOMAIN.PAYLOAD_TOO_LARGE";
+
+    public override string I18nKey => "error.payload_too_large";
+}
+
 public sealed record FieldError(string Path, string Message);
 
 public sealed class ValidationException : DomainException

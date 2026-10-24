@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Settings.Configuration" />
+    <PackageReference Include="Serilog.Sinks.Console" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VepayDO.Application\VepayDO.Application.csproj" />
+    <ProjectReference Include="..\VepayDO.Infrastructure\VepayDO.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

@@ -107,10 +107,10 @@ used; there is no drift check because EF never generates migrations.
 
 ### Roles and connections
 
-Roles are cluster-level objects and are **not** created by migrations. Tests
-create them as a superuser in `PostgresFixture`, mirroring the production
-bootstrap. **The .NET bootstrap script has not been ported yet** (M7 gap; the
-reference is `scripts/bootstrap-db.mjs`).
+Roles are cluster-level objects and are **not** created by migrations. The
+bootstrap scripts (`scripts/bootstrap-db.ps1` for Windows, `scripts/bootstrap-db.sh`
+for Linux/CI) create them and re-assert database ownership; `PostgresFixture`
+performs the same bootstrap for tests. See `runbooks/database-bootstrap.md`.
 
 | Role                  | Connection             | Used by                                    |
 | --------------------- | ---------------------- | ------------------------------------------ |
@@ -118,7 +118,6 @@ reference is `scripts/bootstrap-db.mjs`).
 | `vepaydo_app`         | `ConnectionStrings:DefaultConnection` | API + worker (`NOSUPERUSER NOBYPASSRLS`) |
 | `vepaydo_maintenance` | maintenance connection  | retention module only (`BYPASSRLS`)        |
 | (superuser)           | admin connection       | role/database creation only, never runtime |
-
 ## Tenant context and the unit of work
 
 The whole fail-closed design is one invariant: **outside a tenant transaction,
@@ -207,6 +206,6 @@ invocation is not supported by the CLI).
 | M2        | schema translation, runner, RLS suite, EF model | done |
 | M3        | tenant context and unit of work    | done   |
 | M4        | HTTP pipeline and security         | done   |
-| M5        | business modules                   | pending |
+| M5        | business modules                   | in progress (M5.1-M5.3 done) |
 | M6        | storage, OCR, matching, reconciliation | pending |
 | M7        | infra, CI/CD, e2e, docs            | pending |

@@ -197,6 +197,94 @@ Document assumptions made and items that require external input.
   every test project's cobertura report): Domain 90.2%, Application 96.5%,
   Api 84.3%, Infrastructure 77.3%, overall 82% (bars: Domain ≥ 90%, overall ≥ 80%).
 
+### M5 - master data (members M5.1, business accounts + customers M5.2)
+
+- **List endpoints are unpaginated.** Business accounts, customers, charges and
+  members are returned in full, ordered deterministically. This matches the pilot
+  volumes (hundreds of rows per tenant) and mirrors the members module (M5.1).
+  A cursor-based pagination contract is deferred until a list can realistically
+  exceed a screenful of data; recorded in `BACKLOG.md`.
+- **`TenantSettingsValues.Default` is the settings prototype** (the spec's
+  `TenantSettings.Default`). The type was renamed to avoid colliding with the EF
+  entity `TenantSettings`; see `PATTERNS.md` (M5.1).
+- **`banks` has no treatment as tenant-scoped data.** A new read-only
+  `IBankRepository` (Infrastructure) backs the business-account bank check and is
+  the only reader of the global catalogue from Application code; it has no RLS
+  because the table is global and seeded by migration.
+- **Business accounts store only the last four digits.** `AccountLast4.Parse`
+  enforces `^[0-9]{4}$` and the schema CHECK mirrors it; the full number is never
+  accepted, stored, returned or logged (AGENTS.md sections 7, 13).
+- **Currency is a domain value object** (`Currencies`, `DOP`/`USD`) whose values
+  match the schema CHECK; the API validator, the service and the database
+  constraint share one source of truth.
+- **Duplicate detection is a controlled error before the constraint.** Creating a
+  business account with the same `(bank, last4, currency)` in a tenant raises a
+  `ConflictException` (i.e. a `409` problem document) from the service after an
+  explicit existence check, so the raw unique-index violation is never surfaced.
+  The unique index remains the backstop.
+- **Alias uniqueness and moves (UC-DATA-02).** Adding an alias already owned by
+  the same customer is idempotent; adding one owned by a **different** customer
+  raises a `ConflictException` and the UI offers the move, which is gated by a
+  dedicated OWNER-only permission `customers.aliasMove` (a `VERIFIER` can manage
+  customers but cannot reassign aliases). `(tenant_id, alias_normalized)` is the
+  unique index; the service checks it first so the constraint never fails a
+  request.
+- **Name/alias normalization uses `TextNormalizer.NormalizeName`** (accent-, case-
+  and punctuation-insensitive) through the `CustomerName` value object, so a
+  stored `name_normalized`/`alias_normalized` can never drift from the display
+  value and the `SENDER` matching signal (section 9.3) reads one representation.
+
+### M5.3 - charges (UC-DATA-03, UC-DATA-04, UC-DATA-06)
+
+- **Charge codes are a domain value object (`ChargeCode`).** The stored form is
+  uppercased, limited to `A-Z`, `0-9` and dashes, and at most 24 characters, so a
+  code stays short and readable over the phone. Whitespace inside a code collapses
+  to a single dash (`abc 123` -> `ABC-123`).
+- **Generated codes use a readable prefix plus a zero-padded random suffix**
+  (`SER-000042`). The prefix comes from the first three characters of the
+  description; the suffix comes from `RandomNumberGenerator` through the
+  `IChargeCodeSource` port, so tests are deterministic. The random source is
+  abstracted because the code must not be guessable or predictable.
+- **Uniqueness is checked before the insert and enforced by the index.** An
+  explicit code that already exists in the tenant raises a `ConflictException`
+  (a `409` problem document) instead of surfacing the raw unique-index violation;
+  the `(tenant_id, code)` unique index remains the backstop for a concurrent
+  insert.
+- **The duplicate is a Prototype (`ChargeDraft.Clone()`).** Cloning clears the
+  identity, the status (`OPEN`) and the allocations, and copies the descriptive
+  fields into a new, independent draft. Because `record` already synthesizes a
+  `Clone` member, the Prototype contract is implemented explicitly
+  (`ICloneable<ChargeDraft>.Clone()`), as done for `TenantSettingsValues` in M5.1.
+  The duplicate is issued with **today's date** in the tenant time zone and no due
+  date: a copy of a charge is a new expectation, not a copy of the old timeline.
+- **Balances are read from `v_charge_balances`, never computed on the client.** The
+  view aggregates the active allocations (`voided_at IS NULL`) per charge. The
+  repository reads the `charges` table and the view separately and joins them
+  client-side, because EF Core cannot translate a projection that mixes a table
+  entity with a view row. The view is mapped as a keyless entity
+  (`ChargeBalanceRow`).
+- **A voided charge is immutable.** Editing or voiding it twice raises a
+  `ConflictException`; the void records the reason, the actor and the timestamp.
+- **CSV import is bounded to 1 000 rows** (`ChargeCsvParser.MaxRows`) and expects
+  the header `code,description,amount,currency,issued_on,due_on,customer_id`
+  with `yyyy-MM-dd` dates. A malformed file is rejected with `422` and the row
+  number. Per-row validation errors are reported in the response and never abort
+  the valid rows, unless the caller asks for the all-or-nothing mode, in which
+  case a single invalid row writes nothing. The upload is capped at 2 MB.
+- **The import endpoint is `multipart/form-data`** with the file in the `file`
+  part and the `allOrNothing` flag as a query parameter.
+- **`PATCH /charges/{id}` cannot clear an optional field.** `null` in the body
+  means "not provided", so the customer link and the due date cannot be removed
+  through the partial update; a charge keeps its customer and dates once set.
+  Clearing them would need an explicit "unset" marker, which is not in the MVP
+  contract.
+- **The status filter is strict.** An unknown `status` query value is a
+  controlled `422` (the API validator and the service both reject it) instead of
+  a silently ignored filter.
+- **Every mutation writes exactly one audit event**, including an import that
+  imports nothing (the event carries the imported/skipped counts), so the audit
+  trail never loses an attempted bulk change.
+
 ## Current (Phase 0)
 
 - Node 20.18.1 LTS

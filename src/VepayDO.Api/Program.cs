@@ -4,21 +4,29 @@ using System.Threading.RateLimiting;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Formatting.Json;
 using VepayDO.Api.Kernel.Auth;
-using VepayDO.Api.Kernel.Configuration;
 using VepayDO.Api.Kernel.Health;
 using VepayDO.Api.Kernel.Http;
 using VepayDO.Api.Kernel.Logging;
 using VepayDO.Api.Kernel.Routing;
 using VepayDO.Application.Auth;
+using VepayDO.Application.BusinessAccounts;
+using VepayDO.Application.Charges;
+using VepayDO.Application.Customers;
+using VepayDO.Application.Members;
+using VepayDO.Application.Receipts;
 using VepayDO.Application.Security;
+using VepayDO.Application.Tenants;
 using VepayDO.Domain.Errors;
 using VepayDO.Infrastructure;
+using VepayDO.Infrastructure.Configuration;
+using VepayDO.Infrastructure.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +48,27 @@ builder.Services.AddInfrastructure(appConfig);
 // Application-layer services that orchestrate the repositories live here so the
 // Application assembly stays free of any dependency-injection package.
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITenantSettingsService, TenantSettingsService>();
+builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<IBusinessAccountService, BusinessAccountService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IChargeService, ChargeService>();
+builder.Services.AddScoped<IReceiptService, ReceiptService>();
+
+// The upload limits are configuration-driven so a deployment can retune them
+// without a rebuild (M5.4).
+builder.Services.AddSingleton(new ReceiptOptions(
+    appConfig.StorageMaxUploadBytes,
+    appConfig.StorageSignedUrlTtlSeconds));
+
+// A receipt upload carries up to 20 files of 10 MB, so the default 128 MB
+// multipart limit is not enough (INTEGRATION.md section 5).
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 210_000_000;
+    options.ValueLengthLimit = 1024 * 1024;
+    options.MultipartHeadersLengthLimit = 32 * 1024;
+});
 
 builder.Services.AddControllers(options =>
     {

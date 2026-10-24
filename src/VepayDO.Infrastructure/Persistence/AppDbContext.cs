@@ -65,7 +65,11 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
 
     public DbSet<Charge> Charges => Set<Charge>();
 
+    public DbSet<ChargeBalanceRow> ChargeBalances => Set<ChargeBalanceRow>();
+
     public DbSet<Receipt> Receipts => Set<Receipt>();
+
+    public DbSet<ProcessingJob> ProcessingJobs => Set<ProcessingJob>();
 
     public DbSet<Extraction> Extractions => Set<Extraction>();
 
@@ -267,6 +271,25 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.Property(c => c.Amount).HasColumnType("numeric(14,2)");
             entity.Property(c => c.Currency).HasColumnType("char(3)");
         });
+
+        // v_charge_balances is defined in db/migrations and is read-only here.
+        modelBuilder.Entity<ChargeBalanceRow>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView("v_charge_balances");
+            entity.Property(r => r.ChargeId).HasColumnName("charge_id");
+            entity.Property(r => r.TenantId).HasColumnName("tenant_id");
+            entity.Property(r => r.Amount).HasColumnType("numeric(14,2)");
+            entity.Property(r => r.Currency).HasColumnType("char(3)");
+            entity.Property(r => r.IssuedOn).HasColumnName("issued_on").HasColumnType("date");
+            entity.Property(r => r.DueOn).HasColumnName("due_on").HasColumnType("date");
+            entity.Property(r => r.AmountApplied).HasColumnName("amount_applied").HasColumnType("numeric(14,2)");
+            entity.Property(r => r.Balance).HasColumnType("numeric(14,2)");
+            entity.Property(r => r.VoidedAt).HasColumnName("voided_at");
+            entity.Property(r => r.VoidedBy).HasColumnName("voided_by");
+            entity.Property(r => r.VoidReason).HasColumnName("void_reason");
+            entity.Property(r => r.CreatedBy).HasColumnName("created_by");
+        });
     }
 
     private static void ConfigureReceipts(ModelBuilder modelBuilder)
@@ -279,6 +302,13 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : DbCon
             entity.Property(r => r.DestinationLast4).HasColumnType("char(4)");
             entity.Property(r => r.MatchScore).HasColumnType("numeric(4,3)");
             entity.Property(r => r.MatchSignals).HasColumnType("jsonb");
+        });
+
+        // The processing queue carries no business data, so it has no tenant
+        // foreign key: the worker discovers the jobs of every tenant (M5.4).
+        modelBuilder.Entity<ProcessingJob>(entity =>
+        {
+            entity.ToTable("processing_jobs").HasKey(j => j.Id);
         });
 
         modelBuilder.Entity<Extraction>(entity =>

@@ -5,6 +5,7 @@
     <Project Path="src/VepayDO.Contracts/VepayDO.Contracts.csproj" />
     <Project Path="src/VepayDO.Domain/VepayDO.Domain.csproj" />
     <Project Path="src/VepayDO.Infrastructure/VepayDO.Infrastructure.csproj" />
+    <Project Path="src/VepayDO.Worker/VepayDO.Worker.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/VepayDO.Api.Tests/VepayDO.Api.Tests.csproj" />

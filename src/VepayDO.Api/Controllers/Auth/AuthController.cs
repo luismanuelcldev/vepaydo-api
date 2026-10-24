@@ -35,7 +35,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
         CancellationToken cancellationToken)
     {
         var result = await auth
-            .RegisterAsync(new RegisterInput(body.Email, body.Name, body.Password, body.TenantName), Meta(), cancellationToken)
+            .RegisterAsync(new RegisterInput(body.Email, body.Name, body.Password, body.TenantName), RequestMetaFactory.From(HttpContext), cancellationToken)
             .ConfigureAwait(false);
 
         AuthCookies.SetRefreshToken(HttpContext, result.RefreshToken, result.RefreshExpiresAt, SecureCookies);
@@ -51,7 +51,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
         CancellationToken cancellationToken)
     {
         var result = await auth
-            .LoginAsync(new LoginInput(body.Email, body.Password), Meta(), cancellationToken)
+            .LoginAsync(new LoginInput(body.Email, body.Password), RequestMetaFactory.From(HttpContext), cancellationToken)
             .ConfigureAwait(false);
 
         AuthCookies.SetRefreshToken(HttpContext, result.RefreshToken, result.RefreshExpiresAt, SecureCookies);
@@ -67,7 +67,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
     {
         var userId = User.RequireUserId();
         var result = await auth
-            .SelectTenantAsync(userId, body.TenantId, AuthCookies.ReadRefreshToken(HttpContext), Meta(), cancellationToken)
+            .SelectTenantAsync(userId, body.TenantId, AuthCookies.ReadRefreshToken(HttpContext), RequestMetaFactory.From(HttpContext), cancellationToken)
             .ConfigureAwait(false);
 
         return Ok(result.ToResponse());
@@ -79,7 +79,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
     public async Task<ActionResult<RefreshResponse>> Refresh(CancellationToken cancellationToken)
     {
         var token = AuthCookies.ReadRefreshToken(HttpContext) ?? string.Empty;
-        var result = await auth.RefreshAsync(token, Meta(), cancellationToken).ConfigureAwait(false);
+        var result = await auth.RefreshAsync(token, RequestMetaFactory.From(HttpContext), cancellationToken).ConfigureAwait(false);
 
         AuthCookies.SetRefreshToken(HttpContext, result.RefreshToken, result.RefreshExpiresAt, SecureCookies);
 
@@ -142,7 +142,7 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
         [FromBody] ForgotPasswordRequest body,
         CancellationToken cancellationToken)
     {
-        await auth.ForgotPasswordAsync(body.Email, Meta(), cancellationToken).ConfigureAwait(false);
+        await auth.ForgotPasswordAsync(body.Email, RequestMetaFactory.From(HttpContext), cancellationToken).ConfigureAwait(false);
         return Ok(new ForgotPasswordResponse(AuthConstants.ForgotPasswordNeutralMessage));
     }
 
@@ -182,15 +182,5 @@ public sealed class AuthController(IAuthService auth, IHostEnvironment environme
             .ConfigureAwait(false);
 
         return NoContent();
-    }
-
-    private RequestMeta Meta()
-    {
-        var userAgent = Request.Headers.UserAgent.Count > 0 ? Request.Headers.UserAgent.ToString() : null;
-        var deviceLabel = userAgent is null
-            ? null
-            : userAgent[..Math.Min(userAgent.Length, AuthConstants.DeviceLabelMaxLength)];
-
-        return new RequestMeta(HttpContext.Connection.RemoteIpAddress, userAgent, deviceLabel);
     }
 }

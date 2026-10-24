@@ -7,9 +7,16 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using VepayDO.Api.Tests.Probe;
 using VepayDO.Application.Auth;
+using VepayDO.Application.BusinessAccounts;
+using VepayDO.Application.Charges;
+using VepayDO.Application.Configuration;
+using VepayDO.Application.Customers;
 using VepayDO.Application.Legal;
+using VepayDO.Application.Members;
+using VepayDO.Application.Receipts;
 using VepayDO.Application.Security;
 using VepayDO.Application.Tenancy;
+using VepayDO.Application.Tenants;
 
 namespace VepayDO.Api.Tests.Fixtures;
 
@@ -24,12 +31,25 @@ public class ApiTestFactory : WebApplicationFactory<Program>
     public const string TestOrigin = "http://localhost:5173";
     public const string TestJwtAccessSecret = "test-jwt-access-secret-0123456789abcdef";
     public const string TestRefreshTokenPepper = "test-refresh-token-pepper-0123456789abcdef";
+    public const string TestStorageSigningSecret = "test-storage-signing-secret-0123456789abcdef";
 
     public RecordingTenantTransactionRunner Runner { get; } = new();
 
     public FakeLegalService Legal { get; } = new();
 
     public FakeAuthService Auth { get; } = new();
+
+    public FakeTenantSettingsService Settings { get; } = new();
+
+    public FakeMemberService Members { get; } = new();
+
+    public FakeBusinessAccountService BusinessAccounts { get; } = new();
+
+    public FakeCustomerService Customers { get; } = new();
+
+    public FakeChargeService Charges { get; } = new();
+
+    public FakeReceiptService Receipts { get; } = new();
 
     /// <summary>
     /// Permit limit for the <c>auth</c> rate-limiting policy. The production
@@ -68,7 +88,6 @@ public class ApiTestFactory : WebApplicationFactory<Program>
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        builder.UseEnvironment("Development");
         builder.UseSetting("App:DatabaseUrl", DatabaseUrl);
         builder.UseSetting("App:JwtAccessSecret", TestJwtAccessSecret);
         builder.UseSetting("App:RefreshTokenPepper", TestRefreshTokenPepper);
@@ -77,10 +96,12 @@ public class ApiTestFactory : WebApplicationFactory<Program>
         builder.UseSetting("App:AuthRateLimit", AuthRateLimit.ToString(System.Globalization.CultureInfo.InvariantCulture));
         builder.UseSetting("App:AuthStrictRateLimit", AuthRateLimit.ToString(System.Globalization.CultureInfo.InvariantCulture));
 
-        builder.ConfigureAppConfiguration((_, configuration) =>
+        builder.ConfigureAppConfiguration((context, configuration) =>
         {
+            configuration.Sources.Clear();
             configuration.AddInMemoryCollection(new Dictionary<string, string?>
             {
+                ["App:Environment"] = "Development",
                 ["App:DatabaseUrl"] = DatabaseUrl,
                 ["App:JwtAccessSecret"] = TestJwtAccessSecret,
                 ["App:RefreshTokenPepper"] = TestRefreshTokenPepper,
@@ -90,6 +111,14 @@ public class ApiTestFactory : WebApplicationFactory<Program>
                 ["App:AuthStrictRateLimit"] = AuthRateLimit.ToString(System.Globalization.CultureInfo.InvariantCulture),
                 ["App:LegalTermsVersion"] = "2026-01",
                 ["App:LegalPrivacyVersion"] = "2026-01",
+                ["App:StorageProvider"] = "inmemory",
+                ["App:StoragePublicBaseUrl"] = "http://localhost:5000",
+                ["App:StorageSigningSecret"] = TestStorageSigningSecret,
+                ["App:StorageMaxUploadBytes"] = "10000000",
+                ["App:StorageSignedUrlTtlSeconds"] = "300",
+                ["App:WorkerBatchSize"] = "10",
+                ["App:WorkerPollIntervalSeconds"] = "5",
+                ["App:WorkerMaxAttempts"] = "5",
             });
         });
 
@@ -99,6 +128,30 @@ public class ApiTestFactory : WebApplicationFactory<Program>
             services.Replace(ServiceDescriptor.Singleton(Runner));
             services.Replace(ServiceDescriptor.Singleton<ILegalService>(Legal));
             services.Replace(ServiceDescriptor.Singleton<IAuthService>(Auth));
+            services.Replace(ServiceDescriptor.Singleton<ITenantSettingsService>(Settings));
+            services.Replace(ServiceDescriptor.Singleton<IMemberService>(Members));
+            services.Replace(ServiceDescriptor.Singleton<IBusinessAccountService>(BusinessAccounts));
+            services.Replace(ServiceDescriptor.Singleton<IReceiptService>(Receipts));
+
+            services.Replace(ServiceDescriptor.Singleton(new AppConfig
+            {
+                Environment = "Development",
+                DatabaseUrl = DatabaseUrl,
+                JwtAccessSecret = TestJwtAccessSecret,
+                RefreshTokenPepper = TestRefreshTokenPepper,
+                AppOrigin = TestOrigin,
+                MailTransport = "fake",
+                StorageProvider = "inmemory",
+                StoragePublicBaseUrl = "http://localhost:5000",
+                StorageSigningSecret = TestStorageSigningSecret,
+                StorageMaxUploadBytes = 10000000,
+                StorageSignedUrlTtlSeconds = 300,
+                WorkerBatchSize = 10,
+                WorkerPollIntervalSeconds = 5,
+                WorkerMaxAttempts = 5,
+                LegalTermsVersion = "2026-01",
+                LegalPrivacyVersion = "2026-01",
+            }));
 
             services.AddControllers().AddApplicationPart(typeof(ProbeController).Assembly);
             services.AddScoped<IValidator<SampleRequest>, SampleRequestValidator>();

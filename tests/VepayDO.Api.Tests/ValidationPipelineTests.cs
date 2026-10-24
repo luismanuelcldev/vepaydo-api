@@ -4,11 +4,6 @@ using VepayDO.Api.Tests.Fixtures;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// Request validation is part of the kernel: a body that fails its validator, or
-/// that cannot be parsed at all, becomes one 422 problem-details document with
-/// the offending fields listed (AGENTS.md section 3.3).
-/// </summary>
 public sealed class ValidationPipelineTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
     [Fact]

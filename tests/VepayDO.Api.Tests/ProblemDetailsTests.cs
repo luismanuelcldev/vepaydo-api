@@ -2,12 +2,6 @@ using VepayDO.Api.Tests.Fixtures;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// Every error leaving the API is an RFC 9457 document with the stable
-/// <c>code</c>/<c>i18nKey</c> pair, including the ones produced by the framework
-/// (unmatched route, wrong verb) and by unexpected exceptions, which must never
-/// leak their message (AGENTS.md sections 10 and 13).
-/// </summary>
 public sealed class ProblemDetailsTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
     [Fact]

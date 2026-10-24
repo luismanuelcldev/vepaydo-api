@@ -3,10 +3,6 @@ using Xunit;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// Reads a problem-details response. Every error the API emits must have this
-/// shape, so the assertions live in one place.
-/// </summary>
 internal static class ProblemReader
 {
     public const string ContentType = "application/problem+json";

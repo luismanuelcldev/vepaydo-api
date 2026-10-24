@@ -3,11 +3,6 @@ using VepayDO.Api.Tests.Fixtures;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// The request unit of work: an authenticated call runs inside a tenant context
-/// derived from the token, a call without a selected tenant runs as the user,
-/// and an anonymous route starts no transaction at all (AGENTS.md section 7).
-/// </summary>
 public sealed class TenantContextTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
     [Fact]

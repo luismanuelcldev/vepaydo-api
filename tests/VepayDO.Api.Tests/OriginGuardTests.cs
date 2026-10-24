@@ -2,13 +2,10 @@ using VepayDO.Api.Tests.Fixtures;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// CSRF protection for the cookie-authenticated endpoints: a request must come
-/// from the configured origin, by <c>Origin</c> or by <c>Referer</c>, and only
-/// the routes that ask for it are guarded (AGENTS.md section 13).
-/// </summary>
-public sealed class OriginGuardTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
+public sealed partial class OriginGuardTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
+    private readonly ApiTestFactory factory = factory;
+
     private const string ForeignOrigin = "https://evil.example";
 
     [Fact]
@@ -84,26 +81,5 @@ public sealed class OriginGuardTests(ApiTestFactory factory) : IClassFixture<Api
         var response = await SendAsync(client, "/api/v1/__test/anonymous", origin: ForeignOrigin, referer: null);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-    }
-
-    private static Task<HttpResponseMessage> SendAsync(
-        HttpClient client,
-        string path,
-        string? origin,
-        string? referer)
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri(path, UriKind.Relative));
-
-        if (origin is not null)
-        {
-            request.Headers.Add("Origin", origin);
-        }
-
-        if (referer is not null)
-        {
-            request.Headers.Add("Referer", referer);
-        }
-
-        return client.SendAsync(request);
     }
 }

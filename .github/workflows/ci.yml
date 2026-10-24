@@ -1,0 +1,41 @@
+name: CI & DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Build, Audit & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore Dependencies
+        run: dotnet restore
+
+      - name: Audit NuGet Package Vulnerabilities
+        run: dotnet list package --vulnerable --include-transitive
+
+      - name: Build Solution (Treat Warnings As Errors)
+        run: dotnet build --configuration Release --no-restore -warnaserror
+
+      - name: Run Architecture & Domain Tests
+        run: |
+          dotnet test tests/VepayDO.Architecture.Tests/VepayDO.Architecture.Tests.csproj --configuration Release --no-build
+          dotnet test tests/VepayDO.Domain.Tests/VepayDO.Domain.Tests.csproj --configuration Release --no-build
+
+      - name: Run Application Use Case Tests
+        run: dotnet test tests/VepayDO.Application.Tests/VepayDO.Application.Tests.csproj --configuration Release --no-build
+
+      - name: Run API Integration Tests
+        run: dotnet test tests/VepayDO.Api.Tests/VepayDO.Api.Tests.csproj --configuration Release --no-build

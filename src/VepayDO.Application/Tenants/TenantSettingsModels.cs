@@ -1,8 +1,7 @@
-using VepayDO.Domain.Tenants;
+﻿using VepayDO.Domain.Tenants;
 
 namespace VepayDO.Application.Tenants;
 
-/// <summary>Per-tenant settings as returned by <c>GET /settings</c> (UC-SET-04).</summary>
 public sealed record TenantSettingsView(
     short DateWindowDays,
     decimal AmountTolerance,
@@ -21,12 +20,6 @@ public sealed record TenantSettingsView(
     }
 }
 
-/// <summary>
-/// A partial update of the tenant settings (UC-SET-04). A <c>null</c> field leaves
-/// the current value untouched; <see cref="VerifierAmountCap"/> is nullable on
-/// purpose so the cap can be cleared, so callers use
-/// <see cref="ClearVerifierAmountCap"/> to distinguish "leave as is" from "remove".
-/// </summary>
 public sealed record UpdateTenantSettingsInput(
     short? DateWindowDays,
     decimal? AmountTolerance,
@@ -34,7 +27,7 @@ public sealed record UpdateTenantSettingsInput(
     bool ClearVerifierAmountCap,
     short? ImageRetentionMonths)
 {
-    /// <summary>Merges this partial update onto the given current values.</summary>
+
     public TenantSettingsValues ApplyTo(TenantSettingsValues current)
     {
         ArgumentNullException.ThrowIfNull(current);

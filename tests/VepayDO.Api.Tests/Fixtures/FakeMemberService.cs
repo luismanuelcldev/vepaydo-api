@@ -4,18 +4,12 @@ using VepayDO.Domain.Enums;
 
 namespace VepayDO.Api.Tests.Fixtures;
 
-/// <summary>
-/// Configuration-driven stand-in for <see cref="IMemberService"/>. The real
-/// service needs PostgreSQL and argon2; these tests exercise the HTTP contract
-/// (verbs, status codes, permission gating, validation) around it.
-/// </summary>
 public sealed class FakeMemberService : IMemberService
 {
     public IReadOnlyList<MemberView> Members { get; set; } = [];
 
     public string TemporaryPassword { get; set; } = "temp-password-1234";
 
-    /// <summary>When set, every call throws instead of returning a result.</summary>
     public Exception? Error { get; set; }
 
     public CreateMemberInput? LastCreate { get; private set; }

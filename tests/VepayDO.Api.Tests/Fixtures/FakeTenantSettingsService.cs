@@ -3,16 +3,10 @@ using VepayDO.Application.Tenants;
 
 namespace VepayDO.Api.Tests.Fixtures;
 
-/// <summary>
-/// Configuration-driven stand-in for <see cref="ITenantSettingsService"/>. The
-/// real service needs PostgreSQL; these tests exercise the HTTP contract (verbs,
-/// status codes, permission gating, validation) around it.
-/// </summary>
 public sealed class FakeTenantSettingsService : ITenantSettingsService
 {
     public TenantSettingsView Current { get; set; } = new(7, 0m, null, 24);
 
-    /// <summary>When set, every call throws instead of returning a result.</summary>
     public Exception? Error { get; set; }
 
     public UpdateTenantSettingsInput? LastUpdate { get; private set; }

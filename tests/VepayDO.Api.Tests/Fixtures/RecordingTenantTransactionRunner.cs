@@ -2,11 +2,6 @@ using VepayDO.Application.Tenancy;
 
 namespace VepayDO.Api.Tests.Fixtures;
 
-/// <summary>
-/// Records every tenant context the pipeline installs, without touching a
-/// database. The M4 tests are about the HTTP kernel, not about PostgreSQL, so
-/// this replaces the real transaction runner.
-/// </summary>
 public sealed class RecordingTenantTransactionRunner : ITenantTransactionRunner
 {
     public List<TenantContext> RunContexts { get; } = [];

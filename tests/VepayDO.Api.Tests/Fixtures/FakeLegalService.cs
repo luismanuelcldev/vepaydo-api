@@ -2,10 +2,6 @@ using VepayDO.Application.Legal;
 
 namespace VepayDO.Api.Tests.Fixtures;
 
-/// <summary>
-/// Legal acceptance ledger stand-in. The real table is global and needs
-/// PostgreSQL; the gate behaviour is what these tests exercise.
-/// </summary>
 public sealed class FakeLegalService : ILegalService
 {
     public bool Accepted { get; set; } = true;

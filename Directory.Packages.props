@@ -19,7 +19,7 @@
     <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
     <!-- Core Serilog, referenced by the Infrastructure layer so the redaction
          policy can live next to the code that must never log sensitive data. -->
-    <PackageVersion Include="Serilog" Version="4.2.0" />
+    <PackageVersion Include="Serilog" Version="4.4.0" />
     <!-- Serilog configuration files, shared by the API and the worker. -->
     <PackageVersion Include="Serilog.Settings.Configuration" Version="9.0.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />

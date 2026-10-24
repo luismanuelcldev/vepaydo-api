@@ -30,7 +30,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.13" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
     <!-- FluentAssertions 7.2.0 is the last Apache-2.0 release (8.x is commercially licensed). -->
-    <PackageVersion Include="FluentAssertions" Version="7.2.0" />
+    <PackageVersion Include="FluentAssertions" Version="8.11.0" />
     <!-- Image decoding/re-encoding and EXIF stripping for receipt uploads. SkiaSharp is MIT;
          ImageSharp 3.x/4.x is under the Six Labors Split License and would require a paid
          commercial license. See ADR 0009. -->

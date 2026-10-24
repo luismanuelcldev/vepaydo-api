@@ -5,23 +5,13 @@ namespace VepayDO.Infrastructure.Tests.Security;
 
 public sealed class Argon2idPasswordHasherTests
 {
-    /// <summary>
-    /// Reference PHC hash produced by Python <c>argon2-cffi</c> (the official
-    /// argon2 binding) with exactly the parameters our hasher uses:
-    /// argon2id, v=19, m=19456, t=2, p=1, 32-byte hash, 16-byte salt.
-    /// </summary>
+
     private const string ReferenceHash =
         "$argon2id$v=19$m=19456,t=2,p=1$Kgx7Zq8w5CgyYsZmOQhFYQ$" +
         "gUskzqnbJeT7fjDPAIGCynJJaRHh7+4aLdY9kQkQbQw";
 
     private readonly Argon2idPasswordHasher _hasher = new();
 
-    /// <summary>
-    /// Full known-answer test against the reference implementation: <see cref="Verify"/>
-    /// re-derives the key from the parameters embedded in the PHC string, so a
-    /// <c>true</c> here proves our argon2id derives the same bytes as argon2-cffi
-    /// for the same password, salt and parameters.
-    /// </summary>
     [Fact]
     public void Verifies_a_hash_produced_by_the_reference_implementation()
     {

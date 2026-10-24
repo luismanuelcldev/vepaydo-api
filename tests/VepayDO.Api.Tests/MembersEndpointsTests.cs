@@ -1,20 +1,15 @@
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
 using VepayDO.Api.Tests.Fixtures;
 using VepayDO.Contracts.Members;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// HTTP contract of the members module (UC-SET-03, UC-AUTH-09): OWNER-only routes,
-/// the one-time temporary password in the create response, and validation.
-/// </summary>
-public sealed class MembersEndpointsTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
+public sealed partial class MembersEndpointsTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
-    // Enums travel as their UPPER_SNAKE names, so the client-side deserializer
-    // must mirror the API's JsonStringEnumConverter.
+    private readonly ApiTestFactory factory = factory;
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
@@ -83,47 +78,4 @@ public sealed class MembersEndpointsTests(ApiTestFactory factory) : IClassFixtur
         Assert.Equal("one-time-pass-1234", body!.TemporaryPassword);
         Assert.Equal("nuevo@example.test", body.Member.Email);
     }
-
-    [Fact]
-    public async Task Owner_Create_With_An_Invalid_Email_Is_Rejected()
-    {
-        factory.Members.Reset();
-        var client = factory.CreateClientWithToken(
-            factory.CreateAccessToken(TestData.OwnerUserId, TestData.TenantId, "OWNER"));
-
-        var response = await client.PostAsync(
-            new Uri("/api/v1/members", UriKind.Relative),
-            JsonBody("""{"email":"not-an-email","name":"Nuevo","role":"VERIFIER"}"""));
-
-        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
-        Assert.Null(factory.Members.LastCreate);
-    }
-
-    [Fact]
-    public async Task Owner_Can_Revoke_A_Members_Sessions()
-    {
-        factory.Members.Reset();
-        var client = factory.CreateClientWithToken(
-            factory.CreateAccessToken(TestData.OwnerUserId, TestData.TenantId, "OWNER"));
-
-        var response = await client.PostAsync(
-            new Uri($"/api/v1/members/{Guid.NewGuid()}/revoke-sessions", UriKind.Relative),
-            content: null);
-
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-    }
-
-    [Fact]
-    public async Task Anonymous_Cannot_List_Members()
-    {
-        factory.Members.Reset();
-        var client = factory.CreateAnonymousClient();
-
-        var response = await client.GetAsync(new Uri("/api/v1/members", UriKind.Relative));
-
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-    }
-
-    private static StringContent JsonBody(string json) =>
-        new(json, System.Text.Encoding.UTF8, "application/json");
 }

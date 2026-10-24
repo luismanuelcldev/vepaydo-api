@@ -3,11 +3,6 @@ using VepayDO.Api.Tests.Fixtures;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// The health probes are the contract with Caddy and the uptime monitor: they
-/// must answer without a session, and readiness must fail when the database is
-/// not reachable (AGENTS.md section 10).
-/// </summary>
 public sealed class HealthEndpointTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
     [Fact]

@@ -2,10 +2,6 @@ using VepayDO.Api.Tests.Fixtures;
 
 namespace VepayDO.Api.Tests;
 
-/// <summary>
-/// The two account gates: a one-time temporary password and pending legal
-/// acceptance (AGENTS.md section 9.9, UC-AUTH-08).
-/// </summary>
 public sealed class AccountGateTests(ApiTestFactory factory) : IClassFixture<ApiTestFactory>
 {
     [Fact]

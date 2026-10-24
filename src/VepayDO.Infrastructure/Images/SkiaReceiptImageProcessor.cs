@@ -1,32 +1,14 @@
 using System.Security.Cryptography;
-using SkiaSharp;
 using VepayDO.Application.Receipts.Ports;
 using VepayDO.Domain.Errors;
 using VepayDO.Domain.Receipts;
 
 namespace VepayDO.Infrastructure.Images;
 
-/// <summary>
-/// Processes an uploaded receipt with SkiaSharp (M5.4):
-///
-/// <list type="bullet">
-///   <item>the content type comes from the magic bytes, never from the declared
-///   <c>Content-Type</c>; a declaration that contradicts the bytes is rejected;</item>
-///   <item>images are re-encoded, which drops every metadata segment (EXIF, and
-///   with it the GPS coordinates of the phone that took the picture);</item>
-///   <item>the SHA-256 is computed over the bytes that are actually stored.</item>
-/// </list>
-///
-/// </summary>
-public sealed class SkiaReceiptImageProcessor : IReceiptImageProcessor
+public sealed partial class SkiaReceiptImageProcessor : IReceiptImageProcessor
 {
-    /// <summary>Quality of the re-encoded JPEG.</summary>
     public const int JpegQuality = 85;
-
-    /// <summary>Longest edge kept, so a huge photo cannot blow up the storage.</summary>
     public const int MaxDimension = 4096;
-
-    /// <summary>Refused above this many pixels (decompression-bomb guard).</summary>
     public const int MaxPixels = 40_000_000;
 
     public Task<ProcessedReceiptImage> ProcessAsync(
@@ -57,7 +39,6 @@ public sealed class SkiaReceiptImageProcessor : IReceiptImageProcessor
             sha256));
     }
 
-    /// <summary>Detects the real content type from the first bytes of the file.</summary>
     public static ReceiptContentType Sniff(ReadOnlySpan<byte> bytes)
     {
         if (bytes.Length >= 3 && bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF)
@@ -78,63 +59,6 @@ public sealed class SkiaReceiptImageProcessor : IReceiptImageProcessor
             return ReceiptContentType.Pdf;
         }
 
-        throw new UnsupportedMediaTypeException(
-            "The file is not a supported receipt image or document");
-    }
-
-    private static (byte[] Content, int? Width, int? Height) Reencode(
-        byte[] bytes,
-        ReceiptContentType contentType)
-    {
-        using var stream = new SKMemoryStream(bytes);
-        using var bitmap = SKBitmap.Decode(stream);
-
-        if (bitmap is null)
-        {
-            throw new UnsupportedMediaTypeException("The receipt image could not be decoded");
-        }
-
-        if ((long)bitmap.Width * bitmap.Height > MaxPixels)
-        {
-            throw new UnsupportedMediaTypeException("The receipt image is too large to process");
-        }
-
-        var scale = Math.Min(
-            1f,
-            (float)MaxDimension / Math.Max(bitmap.Width, bitmap.Height));
-
-        if (scale >= 1f)
-        {
-            return Encode(bitmap, contentType);
-        }
-
-        var width = Math.Max(1, (int)Math.Round(bitmap.Width * scale));
-        var height = Math.Max(1, (int)Math.Round(bitmap.Height * scale));
-
-        using var scaled = new SKBitmap(width, height, bitmap.ColorType, bitmap.AlphaType);
-        using (var canvas = new SKCanvas(scaled))
-        {
-            canvas.DrawBitmap(bitmap, new SKRect(0, 0, width, height));
-            canvas.Flush();
-        }
-
-        return Encode(scaled, contentType);
-    }
-
-    private static (byte[] Content, int? Width, int? Height) Encode(
-        SKBitmap bitmap,
-        ReceiptContentType contentType)
-    {
-        using var image = SKImage.FromBitmap(bitmap);
-        using var data = contentType == ReceiptContentType.Png
-            ? image.Encode(SKEncodedImageFormat.Png, 100)
-            : image.Encode(SKEncodedImageFormat.Jpeg, JpegQuality);
-
-        if (data is null)
-        {
-            throw new UnsupportedMediaTypeException("The receipt image could not be encoded");
-        }
-
-        return (data.ToArray(), bitmap.Width, bitmap.Height);
+        throw new UnsupportedMediaTypeException("The file is not a supported receipt image or document");
     }
 }

@@ -1,15 +1,8 @@
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using VepayDO.Application.Configuration;
 
 namespace VepayDO.Infrastructure.Configuration;
 
-/// <summary>
-/// Binds and validates <see cref="AppConfig"/> at boot. Configuration keys use
-/// the <c>App</c> section; the canonical environment variables of
-/// <c>.env.example</c> are accepted as a fallback so a container needs no
-/// transformation. An invalid configuration stops the process with every
-/// problem listed at once (AGENTS.md sections 3.3 and 15).
-/// </summary>
 public static class AppConfigFactory
 {
     public static AppConfig Create(IConfiguration configuration, string environmentName)
@@ -75,7 +68,6 @@ public static class AppConfigFactory
     private static string? Pick(params string?[] candidates) =>
         candidates.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
 
-    /// <summary>Required members keep their non-nullable type; the validator reports what is missing.</summary>
     private static string PickRequired(params string?[] candidates) =>
         Pick(candidates) ?? string.Empty;
 

@@ -34,7 +34,7 @@
     <!-- Image decoding/re-encoding and EXIF stripping for receipt uploads. SkiaSharp is MIT;
          ImageSharp 3.x/4.x is under the Six Labors Split License and would require a paid
          commercial license. See ADR 0009. -->
-    <PackageVersion Include="SkiaSharp" Version="3.119.4" />
+    <PackageVersion Include="SkiaSharp" Version="4.153.1" />
     <!-- Native Skia binaries for the Linux container (no libfontconfig dependency). -->
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
     <!-- S3-compatible object storage (Apache-2.0). -->

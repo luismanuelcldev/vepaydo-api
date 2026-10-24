@@ -1,14 +1,10 @@
-using Npgsql;
+﻿using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Npgsql.NameTranslation;
 using VepayDO.Domain.Enums;
 
 namespace VepayDO.Infrastructure.Persistence;
 
-/// <summary>
-/// Builds the Npgsql data source with every PostgreSQL enum mapped, so EF Core can
-/// read and write the custom enum types created by the migrations.
-/// </summary>
 public static class AppDataSource
 {
     private static readonly NpgsqlNullNameTranslator NameTranslator = new();
@@ -43,10 +39,6 @@ public static class AppDataSource
         return CreateBuilder(connectionString).Build();
     }
 
-    /// <summary>
-    /// EF 9+ requires the enums to be mapped on the EF side as well; pass this to
-    /// <c>UseNpgsql(dataSource, AppDataSource.ConfigureEnums)</c>.
-    /// </summary>
     public static void ConfigureEnums(NpgsqlDbContextOptionsBuilder options)
     {
         ArgumentNullException.ThrowIfNull(options);

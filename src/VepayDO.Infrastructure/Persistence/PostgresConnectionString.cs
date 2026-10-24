@@ -1,11 +1,5 @@
-namespace VepayDO.Infrastructure.Persistence;
+﻿namespace VepayDO.Infrastructure.Persistence;
 
-/// <summary>
-/// Accepts both conventions for a connection string: the URL form carried by
-/// <c>DATABASE_URL</c> (the Prisma habit the reference project uses) and the
-/// keyword form Npgsql speaks natively. Everything else is passed through
-/// untouched so a hand-written <c>Host=...;Database=...</c> still works.
-/// </summary>
 public static class PostgresConnectionString
 {
     public static string Normalize(string? value)

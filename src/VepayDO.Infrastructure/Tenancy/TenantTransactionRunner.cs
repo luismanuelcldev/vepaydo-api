@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using VepayDO.Application.Tenancy;
 using VepayDO.Domain.Errors;
@@ -14,13 +14,8 @@ public sealed class TenantTransactionRunner : ITenantTransactionRunner
 
     public TenantTransactionRunner(AppDbContext db, TenantContextStore store)
     {
-        ArgumentNullException.ThrowIfNull(db);
-        ArgumentNullException.ThrowIfNull(store);
-
-        _db = db;
-        _store = store;
-
-        // Apply a conservative command timeout for tenant transactions.
+        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _store = store ?? throw new ArgumentNullException(nameof(store));
         _db.Database.SetCommandTimeout(CommandTimeout);
     }
 
@@ -35,102 +30,57 @@ public sealed class TenantTransactionRunner : ITenantTransactionRunner
         var scope = new TenantScope(context, _db);
         return _store.RunAsync(scope, async () =>
         {
-            await using var transaction = await _db.Database
-                .BeginTransactionAsync(cancellationToken)
-                .ConfigureAwait(false);
-
+            await using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
             await ApplyContextAsync(context, cancellationToken).ConfigureAwait(false);
-
             var result = await work(cancellationToken).ConfigureAwait(false);
-
             await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-
             return result;
         });
     }
 
-    public async Task RunAsync(
-        TenantContext context,
-        Func<CancellationToken, ValueTask> work,
-        CancellationToken cancellationToken = default)
+    public async Task RunAsync(TenantContext context, Func<CancellationToken, ValueTask> work, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(work);
-
-        await RunAsync(
-            context,
-            async ct =>
-            {
-                await work(ct).ConfigureAwait(false);
-                return true;
-            },
-            cancellationToken).ConfigureAwait(false);
+        await RunAsync(context, async ct => { await work(ct).ConfigureAwait(false); return true; }, cancellationToken).ConfigureAwait(false);
     }
 
-    public Task<TResult> RunAsUserAsync<TResult>(
-        Guid userId,
-        Func<CancellationToken, ValueTask<TResult>> work,
-        CancellationToken cancellationToken = default)
+    public Task<TResult> RunAsUserAsync<TResult>(Guid userId, Func<CancellationToken, ValueTask<TResult>> work, CancellationToken cancellationToken = default)
         => RunAsync(TenantContext.ForUser(userId), work, cancellationToken);
 
-    public Task<TResult> RunAsSystemAsync<TResult>(
-        Guid tenantId,
-        Func<CancellationToken, ValueTask<TResult>> work,
-        CancellationToken cancellationToken = default)
+    public Task<TResult> RunAsSystemAsync<TResult>(Guid tenantId, Func<CancellationToken, ValueTask<TResult>> work, CancellationToken cancellationToken = default)
         => RunAsync(TenantContext.ForSystem(tenantId), work, cancellationToken);
 
-    public async Task ActivateAsync(
-        TenantContext context,
-        CancellationToken cancellationToken = default)
+    public async Task ActivateAsync(TenantContext context, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(context);
-
         var scope = _store.RequireScope();
         scope.Context = context;
-
         await ApplyContextAsync(context, cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<Guid> CreateTenantAsync(
-        string name,
-        Guid ownerUserId,
-        CancellationToken cancellationToken = default)
+    public async Task<Guid> CreateTenantAsync(string name, Guid ownerUserId, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-
-        await using var transaction = await _db.Database
-            .BeginTransactionAsync(cancellationToken)
-            .ConfigureAwait(false);
-
+        await using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
         var ids = await _db.Database
-            .SqlQuery<Guid>($"""
-                SELECT app.create_tenant({name}::text, {ownerUserId}::uuid) AS "tenant_id"
-                """)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
+            .SqlQuery<Guid>($"SELECT app.create_tenant({name}::text, {ownerUserId}::uuid) AS \"tenant_id\"")
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         if (ids.Count != 1 || ids[0] == Guid.Empty)
-        {
             throw new InvalidOperationException("app.create_tenant did not return a tenant id");
-        }
 
         await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
         return ids[0];
     }
 
-    private async Task ApplyContextAsync(
-        TenantContext context,
-        CancellationToken cancellationToken)
+    private async Task ApplyContextAsync(TenantContext context, CancellationToken cancellationToken)
     {
         var tenantId = context.TenantId?.ToString("D", CultureInfo.InvariantCulture) ?? string.Empty;
         var userId = context.UserId?.ToString("D", CultureInfo.InvariantCulture) ?? string.Empty;
         var role = context.Role?.ToDatabaseValue() ?? string.Empty;
 
         await _db.Database.ExecuteSqlInterpolatedAsync(
-            $"""
-            SELECT set_config('app.tenant_id', {tenantId}, true),
-                   set_config('app.user_id',   {userId},   true),
-                   set_config('app.role',      {role},     true)
-            """,
+            $"SELECT set_config('app.tenant_id', {tenantId}, true), set_config('app.user_id', {userId}, true), set_config('app.role', {role}, true)",
             cancellationToken).ConfigureAwait(false);
     }
 }

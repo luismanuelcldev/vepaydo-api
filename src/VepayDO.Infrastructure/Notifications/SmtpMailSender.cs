@@ -1,14 +1,9 @@
-using System.Net;
+﻿using System.Net;
 using VepayDO.Application.Configuration;
 using VepayDO.Application.Notifications;
 
 namespace VepayDO.Infrastructure.Notifications;
 
-/// <summary>
-/// SMTP implementation of <see cref="IMailSender"/> (Mailpit in development,
-/// a relay in production). Plain-text transactional email only
-/// (AGENTS.md sections 9.9 and 15).
-/// </summary>
 public sealed class SmtpMailSender : IMailSender, IDisposable
 {
     private readonly AppConfig _config;

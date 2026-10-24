@@ -1,14 +1,9 @@
-using VepayDO.Application.Tenancy;
+﻿using VepayDO.Application.Tenancy;
 using VepayDO.Domain.Errors;
 using VepayDO.Infrastructure.Persistence;
 
 namespace VepayDO.Infrastructure.Tenancy;
 
-/// <summary>
-/// Request/job-scoped storage for the active tenant context. Backed by
-/// <see cref="System.Threading.AsyncLocal{T}"/> so async continuations inherit
-/// the scope.
-/// </summary>
 public sealed class TenantContextStore
 {
     private readonly AsyncLocal<TenantScope?> _current = new();

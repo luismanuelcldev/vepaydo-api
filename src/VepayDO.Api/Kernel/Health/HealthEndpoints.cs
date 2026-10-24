@@ -1,13 +1,7 @@
-using Npgsql;
+﻿using Npgsql;
 
 namespace VepayDO.Api.Kernel.Health;
 
-/// <summary>
-/// Liveness and readiness probes (AGENTS.md section 10). Liveness answers
-/// whether the process is up; readiness answers whether it can serve traffic,
-/// which for this API means the database is reachable. Both are anonymous so
-/// the reverse proxy and the uptime monitor can call them.
-/// </summary>
 public static class HealthEndpoints
 {
     public static IEndpointRouteBuilder MapHealthEndpoints(this IEndpointRouteBuilder endpoints)
@@ -69,7 +63,6 @@ public static class HealthEndpoints
     private sealed record HealthResponse(string Status);
 }
 
-/// <summary>Source-generated log messages for the health probes.</summary>
 internal static partial class HealthLog
 {
     [LoggerMessage(

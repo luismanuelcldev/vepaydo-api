@@ -1,15 +1,9 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using VepayDO.Application.Security;
 using VepayDO.Domain.Enums;
 
 namespace VepayDO.Api.Kernel.Auth;
 
-/// <summary>
-/// Turns the claims of a verified access token into the request identity.
-/// Anything that does not parse fails closed: an unrecognised member role, a
-/// missing subject, or a non-authenticated principal all return <c>null</c> and
-/// the request is treated as unauthenticated (AGENTS.md section 7).
-/// </summary>
 public static class ClaimsMapper
 {
     public static AuthenticatedUser? ToAuthenticatedUser(this ClaimsPrincipal? principal)
@@ -33,8 +27,6 @@ public static class ClaimsMapper
             ? (Guid?)tid
             : null;
 
-        // A tenant without a known role would reach the database with an empty
-        // app.role and fail closed anyway; refuse it here instead.
         var roleValue = principal.FindFirstValue(TokenConstants.RoleClaim);
         MemberRole? role = tenantId is null
             ? null

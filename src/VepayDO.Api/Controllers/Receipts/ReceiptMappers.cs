@@ -1,12 +1,8 @@
-using VepayDO.Application.Receipts;
+﻿using VepayDO.Application.Receipts;
 using VepayDO.Contracts.Receipts;
 
 namespace VepayDO.Api.Controllers.Receipts;
 
-/// <summary>
-/// Maps the receipt application results onto the wire contracts, keeping
-/// <c>VepayDO.Contracts</c> free of any Application dependency (AGENTS.md section 6).
-/// </summary>
 internal static class ReceiptMappers
 {
     public static ReceiptResponse ToResponse(this ReceiptView receipt)

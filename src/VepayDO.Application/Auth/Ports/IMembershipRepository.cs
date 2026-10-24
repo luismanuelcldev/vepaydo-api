@@ -1,8 +1,7 @@
-using VepayDO.Domain.Enums;
+﻿using VepayDO.Domain.Enums;
 
 namespace VepayDO.Application.Auth.Ports;
 
-/// <summary>A membership row joined with the tenant (and, for member lists, the user).</summary>
 public sealed record MembershipRecord
 {
     public required Guid TenantId { get; init; }
@@ -22,11 +21,6 @@ public sealed record MembershipRecord
     public DateTimeOffset CreatedAt { get; init; }
 }
 
-/// <summary>
-/// Reads and writes <c>memberships</c>. RLS exposes the current tenant plus the
-/// caller's own rows (<c>memberships_own</c>), so membership reads run under the
-/// real <c>app.user_id</c> (AGENTS.md section 7).
-/// </summary>
 public interface IMembershipRepository
 {
     Task<IReadOnlyList<MembershipRecord>> ListActiveByUserAsync(Guid userId, CancellationToken cancellationToken = default);

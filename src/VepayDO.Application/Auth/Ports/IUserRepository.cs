@@ -1,6 +1,5 @@
-namespace VepayDO.Application.Auth.Ports;
+﻿namespace VepayDO.Application.Auth.Ports;
 
-/// <summary>A user row as the application layer needs it (never the ORM entity).</summary>
 public sealed record UserRecord
 {
     public required Guid Id { get; init; }
@@ -20,7 +19,6 @@ public sealed record UserRecord
     public required bool IsPlatformSupport { get; init; }
 }
 
-/// <summary>Data required to create a user.</summary>
 public sealed record NewUser(
     Guid Id,
     string Email,
@@ -29,10 +27,6 @@ public sealed record NewUser(
     string PreferredLocale,
     bool MustChangePassword);
 
-/// <summary>
-/// Reads and writes <c>users</c>. The table has no RLS, so it is reachable
-/// before the caller is trusted, exactly like the reference API (AGENTS.md section 9.9).
-/// </summary>
 public interface IUserRepository
 {
     Task<UserRecord?> FindByEmailAsync(string email, CancellationToken cancellationToken = default);

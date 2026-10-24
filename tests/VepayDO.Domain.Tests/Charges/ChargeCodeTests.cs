@@ -5,11 +5,6 @@ using VepayDO.Domain.Errors;
 
 namespace VepayDO.Domain.Tests.Charges;
 
-/// <summary>
-/// Unit tests for <see cref="ChargeCode"/> (UC-DATA-03): normalization, the
-/// allowed alphabet, length bounds, and deterministic generation with a supplied
-/// random source.
-/// </summary>
 public sealed class ChargeCodeTests
 {
     [Theory]

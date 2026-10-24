@@ -25,7 +25,7 @@ public sealed class ClockTests
     [Fact]
     public void Today_uses_the_tenant_time_zone()
     {
-        // 2026-01-15T03:00:00Z is 2026-01-14 23:00 in Santo Domingo (UTC-4).
+
         var clock = FixedClock.At("2026-01-15T03:00:00Z");
         TimeZoneInfo zone = TenantTimeZone.Get(TenantTimeZone.Default);
 

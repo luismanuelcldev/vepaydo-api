@@ -4,11 +4,6 @@ using VepayDO.Domain.Errors;
 
 namespace VepayDO.Domain.Tests.Customers;
 
-/// <summary>
-/// Pins the name normalization of <see cref="CustomerName"/> (UC-DATA-01, AGENTS.md
-/// section 9.3): display and normalized forms are produced together and share the
-/// same validation, so the <c>SENDER</c> signal and the stored columns never drift.
-/// </summary>
 public sealed class CustomerNameTests
 {
     [Fact]

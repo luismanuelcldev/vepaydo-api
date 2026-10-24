@@ -4,11 +4,6 @@ using VepayDO.Domain.Errors;
 
 namespace VepayDO.Domain.Tests.Billing;
 
-/// <summary>
-/// Pins the invariants of the business-account value objects (UC-SET-03): the
-/// account number is only ever the last four digits, and the currency matches the
-/// database CHECK so the app never stores an unsupported code.
-/// </summary>
 public sealed class AccountValueObjectTests
 {
     [Theory]

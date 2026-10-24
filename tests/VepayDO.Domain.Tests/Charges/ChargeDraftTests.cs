@@ -7,11 +7,6 @@ using VepayDO.Domain.Enums;
 
 namespace VepayDO.Domain.Tests.Charges;
 
-/// <summary>
-/// Unit tests for the <see cref="ChargeDraft"/> Prototype (UC-DATA-04, AGENTS.md
-/// section 8.4): cloning yields an independent draft with a fresh identity, a
-/// cleared status and no allocations, and no mutable state is shared.
-/// </summary>
 public sealed class ChargeDraftTests
 {
     private static ChargeDraft Original() =>

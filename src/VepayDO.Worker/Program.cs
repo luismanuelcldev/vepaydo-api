@@ -1,4 +1,4 @@
-using Serilog;
+﻿using Serilog;
 using Serilog.Formatting.Json;
 using VepayDO.Application.Receipts;
 using VepayDO.Infrastructure;
@@ -11,13 +11,10 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddSerilog((services, loggerConfiguration) => loggerConfiguration
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
-    // Never let a sensitive field (sender, reference, token, password, email)
-    // reach a sink, even if something logs a whole object (AGENTS.md section 13).
+
     .Destructure.With<RedactingDestructuringPolicy>()
     .WriteTo.Console(new JsonFormatter(renderMessage: false)));
 
-// The worker binds the same configuration as the API: a misconfigured process
-// fails at boot instead of on the first job.
 var appConfig = AppConfigFactory.Create(builder.Configuration, builder.Environment.EnvironmentName);
 
 builder.Services.AddSingleton(appConfig);

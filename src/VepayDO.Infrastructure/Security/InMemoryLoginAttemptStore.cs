@@ -1,16 +1,9 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using VepayDO.Application.Security;
 using VepayDO.Domain.Time;
 
 namespace VepayDO.Infrastructure.Security;
 
-/// <summary>
-/// Login rate limiting with a fixed lockout window (AGENTS.md section 13).
-/// Five failures inside fifteen minutes block the key until the window elapses;
-/// a successful login clears it. Constants live here on purpose so the policy is
-/// one reviewable place while the pilot data tells us where to tune it.
-/// Replaced by Redis in M7 so the limit holds across processes.
-/// </summary>
 public sealed class InMemoryLoginAttemptStore(IClock clock) : ILoginAttemptStore
 {
     public const int MaxAttempts = 5;

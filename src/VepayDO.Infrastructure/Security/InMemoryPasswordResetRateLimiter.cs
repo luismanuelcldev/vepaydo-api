@@ -1,15 +1,9 @@
-using VepayDO.Application.Auth;
+﻿using VepayDO.Application.Auth;
 using VepayDO.Application.Auth.Ports;
 using VepayDO.Domain.Time;
 
 namespace VepayDO.Infrastructure.Security;
 
-/// <summary>
-/// In-process, fixed-window limiter for password-reset requests (UC-AUTH-04):
-/// max requests per email and per IP inside <see cref="AuthConstants.ForgotPasswordWindow"/>,
-/// plus a resend cooldown per email. Replaced by a Redis-backed implementation in
-/// M7 (AGENTS.md section 9.9); safe because the MVP runs a single API instance.
-/// </summary>
 public sealed class InMemoryPasswordResetRateLimiter(IClock clock) : IPasswordResetRateLimiter
 {
     private readonly Lock _gate = new();

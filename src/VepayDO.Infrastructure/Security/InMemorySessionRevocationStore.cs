@@ -1,15 +1,9 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using VepayDO.Application.Security;
 using VepayDO.Domain.Time;
 
 namespace VepayDO.Infrastructure.Security;
 
-/// <summary>
-/// Process-local session revocation list (AGENTS.md section 9.9). Entries live
-/// for one access-token lifetime, which is long enough to make revocation take
-/// effect on every token already issued and short enough to bound memory.
-/// Replaced by Redis in M7 so a restart and a second process see the same list.
-/// </summary>
 public sealed class InMemorySessionRevocationStore(IClock clock) : ISessionRevocationStore
 {
     private static readonly TimeSpan SweepInterval = TimeSpan.FromSeconds(60);

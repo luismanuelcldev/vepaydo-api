@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 using VepayDO.Application.Tenants.Ports;
 using VepayDO.Domain.Time;
@@ -8,12 +8,6 @@ using VepayDO.Infrastructure.Tenancy;
 
 namespace VepayDO.Infrastructure.Persistence.Repositories;
 
-/// <summary>
-/// Reads and writes the current tenant's <c>tenant_settings</c> row under the
-/// request's tenant context. The table carries the simple <c>tenant_isolation</c>
-/// RLS policy, so both reads and writes are confined to <c>app.tenant_id</c>
-/// (AGENTS.md section 7).
-/// </summary>
 public sealed class TenantSettingsRepository(TxProvider tx, IClock clock) : ITenantSettingsRepository
 {
     public async Task<TenantSettingsValues?> GetAsync(
@@ -43,8 +37,6 @@ public sealed class TenantSettingsRepository(TxProvider tx, IClock clock) : ITen
     {
         ArgumentNullException.ThrowIfNull(values);
 
-        // The row always exists for a real tenant (app.create_tenant seeds it);
-        // a targeted UPDATE keeps the write scoped even if a row were missing.
         var affected = await tx.DbContext.TenantSettings
             .Where(s => s.TenantId == tenantId)
             .ExecuteUpdateAsync(

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VepayDO.Application.Auth.Ports;
 using VepayDO.Domain.Time;
 using VepayDO.Infrastructure.Persistence.Entities;
@@ -6,11 +6,6 @@ using VepayDO.Infrastructure.Tenancy;
 
 namespace VepayDO.Infrastructure.Persistence.Repositories;
 
-/// <summary>
-/// Reads and writes the global <c>password_reset_tokens</c> table (no RLS). Only
-/// the SHA-256 hash of the token is persisted, never the token itself
-/// (AGENTS.md section 9.9).
-/// </summary>
 public sealed class PasswordResetTokenRepository(TxProvider tx, IClock clock) : IPasswordResetTokenRepository
 {
     public async Task CreateAsync(

@@ -1,12 +1,8 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 
 namespace VepayDO.Domain.Text;
 
-/// <summary>
-/// Pure, case-, accent- and punctuation-insensitive normalization used for
-/// customer names, aliases and the matching engine (AGENTS.md section 9.3).
-/// </summary>
 public static class TextNormalizer
 {
     public static string NormalizeName(string value)

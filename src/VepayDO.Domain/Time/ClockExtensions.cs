@@ -1,8 +1,8 @@
-namespace VepayDO.Domain.Time;
+﻿namespace VepayDO.Domain.Time;
 
 public static class ClockExtensions
 {
-    /// <summary>Current local date in the given tenant time zone.</summary>
+
     public static DateOnly Today(this IClock clock, TimeZoneInfo tenantTimeZone)
     {
         ArgumentNullException.ThrowIfNull(tenantTimeZone);

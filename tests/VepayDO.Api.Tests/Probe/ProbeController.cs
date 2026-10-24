@@ -6,11 +6,6 @@ using VepayDO.Application.Security;
 
 namespace VepayDO.Api.Tests.Probe;
 
-/// <summary>
-/// Test-only endpoints. They exist so the kernel can be exercised end to end:
-/// every route declares exactly the metadata the pipeline is supposed to honour,
-/// and the route prefix convention turns them into <c>/api/v1/__test/...</c>.
-/// </summary>
 [ApiController]
 [Route("__test")]
 public sealed class ProbeController(RecordingTenantTransactionRunner runner) : ControllerBase

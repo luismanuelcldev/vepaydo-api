@@ -149,7 +149,7 @@ public sealed partial class AuthEndpointsTests
         string path,
         object body)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, new Uri(path, UriKind.Relative))
+        using var request = new HttpRequestMessage(HttpMethod.Post, new Uri(path, UriKind.Relative))
         {
             Content = ToJsonContent(body),
         };

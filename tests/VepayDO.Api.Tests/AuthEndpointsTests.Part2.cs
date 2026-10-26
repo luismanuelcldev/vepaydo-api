@@ -56,6 +56,13 @@ public sealed partial class AuthEndpointsTests
     {
         var client = _factory.CreateAnonymousClient();
 
+        var login = await PostJsonAsync(client, $"{AuthBase}/login", new
+        {
+            email = "owner@example.test",
+            password = "supersecret12",
+        });
+        Assert.Equal(HttpStatusCode.OK, login.StatusCode);
+
         var response = await PostJsonAsync(
             client,
             $"{AuthBase}/refresh",

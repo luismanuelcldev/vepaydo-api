@@ -1,5 +1,6 @@
 using VepayDO.Application.Auth;
 using VepayDO.Domain.Enums;
+using VepayDO.Domain.Errors;
 
 namespace VepayDO.Api.Tests.Fixtures;
 
@@ -35,14 +36,28 @@ public sealed partial class FakeAuthService
         return Task.FromResult(new SelectTenantResult(AccessToken, memberships));
     }
 
-    public Task<TokenPair> RefreshAsync(string rawRefreshToken, RequestMeta meta, CancellationToken cancellationToken = default) =>
-        RefreshError is not null
-            ? Task.FromException<TokenPair>(RefreshError)
-            : Task.FromResult(new TokenPair(AccessToken, RefreshToken, RefreshExpiresAt));
+    public Task<TokenPair> RefreshAsync(string rawRefreshToken, RequestMeta meta, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(meta);
+        LastRefreshToken = rawRefreshToken;
+
+        if (RefreshError is not null)
+        {
+            return Task.FromException<TokenPair>(RefreshError);
+        }
+
+        if (string.IsNullOrEmpty(rawRefreshToken))
+        {
+            return Task.FromException<TokenPair>(new UnauthorizedException("Invalid session"));
+        }
+
+        return Task.FromResult(new TokenPair(AccessToken, RefreshToken, RefreshExpiresAt));
+    }
 
     public Task LogoutAsync(Guid userId, string? refreshToken, CancellationToken cancellationToken = default)
     {
         LogoutCalls++;
+        LastLogoutRefreshToken = refreshToken;
         return Task.CompletedTask;
     }
 

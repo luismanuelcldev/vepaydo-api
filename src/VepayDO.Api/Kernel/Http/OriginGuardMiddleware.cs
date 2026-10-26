@@ -24,7 +24,8 @@ public sealed class OriginGuardMiddleware
     {
         ArgumentNullException.ThrowIfNull(context);
 
-        if (context.GetEndpoint()?.Metadata.GetMetadata<CheckOriginAttribute>() is null)
+        if (context.GetEndpoint()?.Metadata.GetMetadata<CheckOriginAttribute>() is null
+            || ClientTypeHeaders.IsNative(context.Request))
         {
             await _next(context).ConfigureAwait(false);
             return;

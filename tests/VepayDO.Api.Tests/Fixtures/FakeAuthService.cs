@@ -35,6 +35,10 @@ public sealed partial class FakeAuthService : IAuthService
 
     public string? LastResetPassword { get; private set; }
 
+    public string? LastRefreshToken { get; private set; }
+
+    public string? LastLogoutRefreshToken { get; private set; }
+
     public string? LastLocale { get; private set; }
 
     public Guid? LastSelectedTenantId { get; private set; }
@@ -59,6 +63,8 @@ public sealed partial class FakeAuthService : IAuthService
         LastForgotEmail = null;
         LastResetToken = null;
         LastResetPassword = null;
+        LastRefreshToken = null;
+        LastLogoutRefreshToken = null;
         LastLocale = null;
         LastSelectedTenantId = null;
         LastChangePasswordCurrent = null;

@@ -17,6 +17,15 @@ public sealed partial class AuthController(IAuthService auth, IHostEnvironment e
 {
     private bool SecureCookies => environment.IsProduction();
 
+    /// <summary>
+    /// Native clients (X-Client-Type: native) receive refresh tokens in the
+    /// response body; browser clients only through the httpOnly cookie (ADR 0006).
+    /// </summary>
+    private AuthResponse WithNativeRefreshToken(AuthResponse response, string refreshToken) =>
+        ClientTypeHeaders.IsNative(HttpContext.Request)
+            ? response with { RefreshToken = refreshToken }
+            : response;
+
     [Public]
     [EnableRateLimiting("auth")]
     [HttpPost("register")]
@@ -24,7 +33,9 @@ public sealed partial class AuthController(IAuthService auth, IHostEnvironment e
     {
         var result = await auth.RegisterAsync(new RegisterInput(body.Email, body.Name, body.Password, body.TenantName), RequestMetaFactory.From(HttpContext), cancellationToken).ConfigureAwait(false);
         AuthCookies.SetRefreshToken(HttpContext, result.RefreshToken, result.RefreshExpiresAt, SecureCookies);
-        return StatusCode(StatusCodes.Status201Created, result.ToResponse());
+
+        var response = result.ToResponse();
+        return StatusCode(StatusCodes.Status201Created, WithNativeRefreshToken(response, result.RefreshToken));
     }
 
     [Public]
@@ -34,7 +45,9 @@ public sealed partial class AuthController(IAuthService auth, IHostEnvironment e
     {
         var result = await auth.LoginAsync(new LoginInput(body.Email, body.Password), RequestMetaFactory.From(HttpContext), cancellationToken).ConfigureAwait(false);
         AuthCookies.SetRefreshToken(HttpContext, result.RefreshToken, result.RefreshExpiresAt, SecureCookies);
-        return Ok(result.ToResponse());
+
+        var response = result.ToResponse();
+        return Ok(WithNativeRefreshToken(response, result.RefreshToken));
     }
 
     [CheckOrigin]
@@ -42,28 +55,44 @@ public sealed partial class AuthController(IAuthService auth, IHostEnvironment e
     public async Task<ActionResult<SelectTenantResponse>> SelectTenant([FromBody] SelectTenantRequest body, CancellationToken cancellationToken)
     {
         var userId = User.RequireUserId();
-        var result = await auth.SelectTenantAsync(userId, body.TenantId, AuthCookies.ReadRefreshToken(HttpContext), RequestMetaFactory.From(HttpContext), cancellationToken).ConfigureAwait(false);
+        var refreshToken = !string.IsNullOrEmpty(body.RefreshToken)
+            ? body.RefreshToken
+            : AuthCookies.ReadRefreshToken(HttpContext);
+        var result = await auth.SelectTenantAsync(userId, body.TenantId, refreshToken, RequestMetaFactory.From(HttpContext), cancellationToken).ConfigureAwait(false);
         return Ok(result.ToResponse());
     }
 
     [Public]
     [CheckOrigin]
     [HttpPost("refresh")]
-    public async Task<ActionResult<RefreshResponse>> Refresh(CancellationToken cancellationToken)
+    public async Task<ActionResult<RefreshResponse>> Refresh([FromBody] RefreshRequest? body, CancellationToken cancellationToken)
     {
-        var token = AuthCookies.ReadRefreshToken(HttpContext) ?? string.Empty;
+        var isNative = ClientTypeHeaders.IsNative(HttpContext.Request);
+        string? nativeToken = body?.RefreshToken;
+        var token = isNative && !string.IsNullOrEmpty(nativeToken)
+            ? nativeToken
+            : AuthCookies.ReadRefreshToken(HttpContext) ?? string.Empty;
+
         var result = await auth.RefreshAsync(token, RequestMetaFactory.From(HttpContext), cancellationToken).ConfigureAwait(false);
         AuthCookies.SetRefreshToken(HttpContext, result.RefreshToken, result.RefreshExpiresAt, SecureCookies);
-        return Ok(new RefreshResponse(result.AccessToken));
+        return Ok(new RefreshResponse(result.AccessToken)
+        {
+            RefreshToken = isNative ? result.RefreshToken : null,
+        });
     }
 
     [AllowPasswordChange]
     [AllowPendingLegal]
     [HttpPost("logout")]
-    public async Task<IActionResult> Logout(CancellationToken cancellationToken)
+    public async Task<IActionResult> Logout([FromBody] LogoutRequest? body, CancellationToken cancellationToken)
     {
         var userId = User.RequireUserId();
-        await auth.LogoutAsync(userId, AuthCookies.ReadRefreshToken(HttpContext), cancellationToken).ConfigureAwait(false);
+        string? nativeToken = body?.RefreshToken;
+        var token = ClientTypeHeaders.IsNative(HttpContext.Request) && !string.IsNullOrEmpty(nativeToken)
+            ? nativeToken
+            : AuthCookies.ReadRefreshToken(HttpContext);
+
+        await auth.LogoutAsync(userId, token, cancellationToken).ConfigureAwait(false);
         AuthCookies.ClearRefreshToken(HttpContext, SecureCookies);
         return NoContent();
     }

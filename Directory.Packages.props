@@ -36,7 +36,7 @@
          commercial license. See ADR 0009. -->
     <PackageVersion Include="SkiaSharp" Version="3.119.4" />
     <!-- Native Skia binaries for the Linux container (no libfontconfig dependency). -->
-    <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
+    <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.154.0" />
     <!-- S3-compatible object storage (Apache-2.0). -->
     <PackageVersion Include="AWSSDK.S3" Version="4.0.104.6" />
     <!-- Background worker host (the receipt processing queue, M5.4). -->
